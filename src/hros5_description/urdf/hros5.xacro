@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot name="hros5" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+	<xacro:include filename="$(find hros5_description)/urdf/hros5_control.xacro" />
+
+	<xacro:include filename="$(find hros5_description)/urdf/hros5_gazebo.xacro" />
+
+	<xacro:include filename="$(find hros5_description)/urdf/modules/robot.xacro" />
+
+</robot>

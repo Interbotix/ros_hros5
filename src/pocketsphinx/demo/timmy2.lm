@@ -1,0 +1,108 @@
+Language model created by QuickLM on Sat Nov 21 12:51:06 EST 2015
+Copyright (c) 1996-2010 Carnegie Mellon University and Alexander I. Rudnicky
+
+The model is in standard ARPA format, designed by Doug Paul while he was at MITRE.
+
+The code that was used to produce this language model is available in Open Source.
+Please visit http://www.speech.cs.cmu.edu/tools/ for more information
+
+The (fixed) discount mass is 0.5. The backoffs are computed using the ratio method.
+This model based on a corpus of 20 sentences and 23 words
+
+\data\
+ngram 1=23
+ngram 2=41
+ngram 3=21
+
+\1-grams:
+-0.7853 </s> -0.3010
+-0.7853 <s> -0.2233
+-2.0864 BAD -0.2233
+-2.0864 DADDY -0.2233
+-2.0864 ERIC -0.2233
+-2.0864 GOOD -0.2233
+-2.0864 GREETINGS -0.2233
+-2.0864 HELLO -0.2233
+-2.0864 HI -0.2233
+-2.0864 MOMMY -0.2233
+-2.0864 NO -0.2233
+-2.0864 PEARL -0.2233
+-2.0864 RENEE -0.2233
+-2.0864 ROBOT -0.2233
+-2.0864 SHADY -0.2233
+-2.0864 SHUTUP -0.2233
+-2.0864 SILLY -0.2233
+-2.0864 STOP -0.2233
+-2.0864 THANK -0.2975
+-2.0864 TIMMY -0.2233
+-2.0864 WHY -0.2233
+-2.0864 YES -0.2233
+-2.0864 YOU -0.2233
+
+\2-grams:
+-1.6021 <s> BAD 0.0000
+-1.6021 <s> DADDY 0.0000
+-1.6021 <s> ERIC 0.0000
+-1.6021 <s> GOOD 0.0000
+-1.6021 <s> GREETINGS 0.0000
+-1.6021 <s> HELLO 0.0000
+-1.6021 <s> HI 0.0000
+-1.6021 <s> MOMMY 0.0000
+-1.6021 <s> NO 0.0000
+-1.6021 <s> PEARL 0.0000
+-1.6021 <s> RENEE 0.0000
+-1.6021 <s> ROBOT 0.0000
+-1.6021 <s> SHADY 0.0000
+-1.6021 <s> SHUTUP 0.0000
+-1.6021 <s> SILLY 0.0000
+-1.6021 <s> STOP 0.0000
+-1.6021 <s> THANK 0.0000
+-1.6021 <s> TIMMY 0.0000
+-1.6021 <s> WHY 0.0000
+-1.6021 <s> YES 0.0000
+-0.3010 BAD </s> -0.3010
+-0.3010 DADDY </s> -0.3010
+-0.3010 ERIC </s> -0.3010
+-0.3010 GOOD </s> -0.3010
+-0.3010 GREETINGS </s> -0.3010
+-0.3010 HELLO </s> -0.3010
+-0.3010 HI </s> -0.3010
+-0.3010 MOMMY </s> -0.3010
+-0.3010 NO </s> -0.3010
+-0.3010 PEARL </s> -0.3010
+-0.3010 RENEE </s> -0.3010
+-0.3010 ROBOT </s> -0.3010
+-0.3010 SHADY </s> -0.3010
+-0.3010 SHUTUP </s> -0.3010
+-0.3010 SILLY </s> -0.3010
+-0.3010 STOP </s> -0.3010
+-0.3010 THANK YOU 0.0000
+-0.3010 TIMMY </s> -0.3010
+-0.3010 WHY </s> -0.3010
+-0.3010 YES </s> -0.3010
+-0.3010 YOU </s> -0.3010
+
+\3-grams:
+-0.3010 <s> BAD </s>
+-0.3010 <s> DADDY </s>
+-0.3010 <s> ERIC </s>
+-0.3010 <s> GOOD </s>
+-0.3010 <s> GREETINGS </s>
+-0.3010 <s> HELLO </s>
+-0.3010 <s> HI </s>
+-0.3010 <s> MOMMY </s>
+-0.3010 <s> NO </s>
+-0.3010 <s> PEARL </s>
+-0.3010 <s> RENEE </s>
+-0.3010 <s> ROBOT </s>
+-0.3010 <s> SHADY </s>
+-0.3010 <s> SHUTUP </s>
+-0.3010 <s> SILLY </s>
+-0.3010 <s> STOP </s>
+-0.3010 <s> THANK YOU
+-0.3010 <s> TIMMY </s>
+-0.3010 <s> WHY </s>
+-0.3010 <s> YES </s>
+-0.3010 THANK YOU </s>
+
+\end\

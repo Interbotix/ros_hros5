@@ -1,0 +1,14 @@
+#robotis_darwin:
+# Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 10
+
+
+
+# Publish all sensor data -----------------------------------
+  imu_sensor_controller:
+    type: imu_sensor_controller/ImuSensorController
+    publish_rate: 50
+
+

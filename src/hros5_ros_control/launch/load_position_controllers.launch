@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+
+<launch>  
+ <arg name="namespace" default="/hros5"/>
+
+ <!-- load position controllers -->
+ <node name="position_controller_spawner" pkg="controller_manager" type="spawner" ns="$(arg namespace)" respawn="false" output="screen"
+   args="RShoulderPitch_position_controller
+   LShoulderPitch_position_controller
+   RShoulderRoll_position_controller
+   LShoulderRoll_position_controller
+   RElbowPitch_position_controller
+   LElbowPitch_position_controller
+   RHipYaw_position_controller
+   LHipYaw_position_controller
+   RHipRoll_position_controller
+   LHipRoll_position_controller
+   RHipPitch_position_controller
+   LHipPitch_position_controller
+   RKneePitch_position_controller
+   LKneePitch_position_controller
+   RAnklePitch_position_controller
+   LAnklePitch_position_controller
+   RAnkleRoll_position_controller
+   LAnkleRoll_position_controller
+   HeadYaw_position_controller
+   HeadPitch_position_controller"/>
+</launch>

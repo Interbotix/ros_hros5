@@ -1,0 +1,57 @@
+controller_manager_ns: ''
+controller_list:
+  - name: hros5/Head_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - HeadYaw
+      - HeadPitch
+  - name: hros5/LeftArm_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - LShoulderPitch
+      - LShoulderRoll
+      - LElbowPitch
+  - name: hros5/RightArm_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - RShoulderPitch
+      - RShoulderRoll
+      - RElbowPitch
+  - name: hros5/LeftLeg_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - LHipYaw
+      - LHipRoll
+      - LHipPitch
+      - LKneePitch
+  - name: hros5/RightLeg_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - RHipYaw
+      - RHipRoll
+      - RHipPitch
+      - RKneePitch
+  - name: hros5/LeftFoot_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - LAnklePitch
+      - LAnkleRoll
+  - name: hros5/RightFoot_controller
+    action_ns: follow_joint_trajectory
+    type: FollowJointTrajectory
+    default: true
+    joints:
+      - RAnklePitch
+      - RAnkleRoll

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+	<!-- XACRO PROPERTIES -->
+	<xacro:property name="PI" value="3.14159265359" />
+	<xacro:property name="PI_2" value="1.57079632679" />
+	<xacro:property name="scale" value="0.1" />
+
+	<xacro:include filename="$(arg meshes_xacro_filename)" />
+
+	<!-- Load xacro modules/parts of the robot -->
+	<xacro:include filename="$(find hros5_description)/urdf/modules/torso.xacro" />
+	<xacro:include filename="$(find hros5_description)/urdf/modules/head.xacro" />
+	<xacro:include filename="$(find hros5_description)/urdf/modules/arms.xacro" />
+	<!-- <xacro:include filename="$(find hros5_description)/urdf/modules/hands.xacro" /> -->
+	<xacro:include filename="$(find hros5_description)/urdf/modules/legs.xacro" />
+	<!-- <xacro:include filename="$(find hros5_description)/urdf/modules/imu.xacro" />
+	<xacro:include filename="$(find hros5_description)/urdf/modules/cameras.xacro" /> -->
+
+</robot>

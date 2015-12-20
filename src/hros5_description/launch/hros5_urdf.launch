@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+	<!-- xacro for visuals/collisions -->
+	<arg name="meshes_xacro" default="$(find hros5_description)/urdf/hros5_visuals_collisions_endoskeleton.xacro"/>
+
+	<!-- Load HR-OS5 Robot parameter file -->
+	<param name="robot_description" command="$(find xacro)/xacro.py $(find hros5_description)/urdf/hros5.xacro meshes_xacro_filename:=$(arg meshes_xacro)" />
+</launch>

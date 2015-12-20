@@ -1,0 +1,45 @@
+hros5/gazebo_ros_control/pid_gains:
+
+  HeadYaw: {p: 100.0, i: 0.01, d: 10.0}
+
+  HeadPitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  HeadPitchDummy: {p: 100.0, i: 0.01, d: 10.0}
+
+  HeadPitchDummy2: {p: 100.0, i: 0.01, d: 10.0}
+
+  LShoulderPitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  LShoulderRoll: {p: 100.0, i: 0.01, d: 10.0}
+
+  LElbowPitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  RShoulderPitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  RShoulderRoll: {p: 100.0, i: 0.01, d: 10.0}
+
+  RElbowPitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  LHipYaw: {p: 100.0, i: 0.01, d: 10.0}
+
+  LHipRoll: {p: 100.0, i: 0.01, d: 10.0}
+
+  LHipPitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  LKneePitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  LAnklePitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  LAnkleRoll: {p: 100.0, i: 0.01, d: 10.0}
+
+  RHipYaw: {p: 100.0, i: 0.01, d: 10.0}
+
+  RHipRoll: {p: 100.0, i: 0.01, d: 10.0}
+
+  RHipPitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  RKneePitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  RAnklePitch: {p: 100.0, i: 0.01, d: 10.0}
+
+  RAnkleRoll: {p: 100.0, i: 0.01, d: 10.0}

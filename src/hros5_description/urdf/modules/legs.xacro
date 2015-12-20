@@ -1,0 +1,129 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+	<xacro:macro name="legs_links_joints" params="side reflect">
+		<joint name="${side}HipYaw" type="revolute">
+			<parent link="torso"/>
+			<child link="${side}Hip"/>
+			<origin xyz="0.0175 ${reflect*0.048} -0.063" rpy="0 0 0"/>
+			<axis xyz="0 0 1"/>
+			<limit lower="-0.523598776" upper="0.523598776" effort="8.4" velocity="4.712388975"/>
+		</joint>
+		<link name="${side}Hip">
+			<xacro:visuals_collisions_hip side="${side}"/>
+			<inertial> <!-- Dummy values from Darwin OP -->
+				<origin xyz="0.000000 0.000480 0.018437" />
+				<mass value="0.167"/>
+				<inertia ixx="0.12259691"  ixy="0.00071127469"  ixz="0.00081143913" iyx="0.00071127469" iyy="0.11066637" iyz="-0.0071635476" izx="0.00081143913" izy="-0.0071635476" izz="0.041877668" />
+			</inertial>
+		</link>
+		<joint name="${side}HipRoll" type="revolute">
+			<parent link="${side}Hip"/>
+			<child link="${side}HipMotors"/>
+			<origin xyz="-0.0675 0 -0.034" rpy="0 0 0"/>
+			<axis xyz="1 0 0"/>
+			<limit lower="-0.785398163" upper="0.785398163" effort="8.4" velocity="4.712388975"/>
+		</joint>
+		<link name="${side}HipMotors">
+			<xacro:visuals_collisions_hip_motors side="${side}"/>
+			<inertial> <!-- Dummy values from Darwin OP -->
+				<origin xyz="0.000000 0.000480 0.018437" />
+				<mass value="0.167"/>
+				<inertia ixx="0.12259691"  ixy="0.00071127469"  ixz="0.00081143913" iyx="0.00071127469" iyy="0.11066637" iyz="-0.0071635476" izx="0.00081143913" izy="-0.0071635476" izz="0.041877668" />
+			</inertial>
+		</link>
+		<joint name="${side}HipPitch" type="revolute">
+			<parent link="${side}HipMotors"/>
+			<child link="${side}Thigh"/>
+			<origin xyz="0.0705 0 0" rpy="0 0 0"/>
+			<axis xyz="0 ${reflect*-1} 0"/>
+			<limit lower="-1.57079633" upper="1.57079633" effort="8.4" velocity="4.712388975"/>
+		</joint>
+		<link name="${side}Thigh">
+			<xacro:visuals_collisions_thigh side="${side}"/>
+			<inertial> <!-- Dummy values from Darwin OP -->
+				<origin xyz="0.000079 0.018242 0.013873" />
+				<mass value="0.11904336"/>
+				<inertia ixx="0.097950272"  ixy="0.0012119368"  ixz="-0.00021223016" iyx="0.00122119368" iyy="0.032848287" iyz="-0.0019474021" izx="-0.00021223016" izy="-0.0019474021" izz="0.11493509" />
+			</inertial>
+		</link>
+		<joint name="${side}KneePitch" type="revolute">
+			<parent link="${side}Thigh"/>
+			<child link="${side}Tibia"/>
+			<origin xyz="0.0017 0 -0.127" rpy="0 0 0"/>
+			<axis xyz="0 ${reflect*-1} 0"/>
+			<limit lower="-2.7925268" upper="2.7925268" effort="8.4" velocity="4.712388975"/>
+		</joint>
+		<link name="${side}Tibia">
+			<xacro:visuals_collisions_tibia side="${side}"/>
+			<inertial> <!-- Dummy values from Darwin OP -->
+				<origin xyz="-0.053955 0.006548 -0.000592" />
+				<mass value="0.070309794"/>
+				<inertia ixx="0.093369608"  ixy="-0.00093567395"  ixz="-0.00023992085" iyx="-0.00093567395" iyy="0.046295534" iyz="-0.012858493" izx="-0.00023992085" izy="-0.012858493" izz="0.11351516" />
+			</inertial>
+		</link>
+		<joint name="${side}AnklePitch" type="revolute">
+			<parent link="${side}Tibia"/>
+			<child link="${side}Ankle"/>
+			<origin xyz="-0.002 0 -0.125" rpy="0 0 0"/>
+			<axis xyz="0 ${reflect*1} 0"/>
+			<limit lower="-1.57079633" upper="1.57079633" effort="8.4" velocity="4.712388975"/>
+		</joint>
+		<link name="${side}Ankle">
+			<xacro:visuals_collisions_ankle side="${side}"/>
+			<inertial> <!-- Dummy values from Darwin OP -->
+				<origin xyz="-0.000214 -0.018536 0.013873" />
+				<mass value="0.16710792"/>
+				<inertia ixx="0.12079175"  ixy="-0.00079781067"  ixz="-0.00039322246" iyx="-0.00079781067" iyy="0.10885465" iyz="0.0070770117" izx="-0.00039322246" izy="0.0070770117" izz="0.041871103" />
+			</inertial>
+		</link>
+		<joint name="${side}AnkleRoll" type="revolute">
+			<parent link="${side}Ankle"/>
+			<child link="${side}Foot"/>
+			<origin xyz="-0.07 0 0" rpy="0 0 0"/>
+			<axis xyz="-1 0 0"/>
+			<limit lower="-0.785398163" upper="0.785398163" effort="8.4" velocity="4.712388975"/>
+		</joint>
+		<link name="${side}Foot">
+			<xacro:visuals_collisions_foot side="${side}"/>
+			<inertial> <!-- Dummy values from Darwin OP -->
+				<origin xyz="-0.025995 -0.009506 -0.000503" />
+				<mass value="0.0794462"/>
+				<inertia ixx="0.12079175"  ixy="-0.00079781067"  ixz="-0.00039322246" iyx="-0.00079781067" iyy="0.10885465" iyz="0.0070770117" izx="-0.00039322246" izy="0.0070770117" izz="0.041871103" />
+			</inertial>
+		</link>
+	</xacro:macro>
+
+	<xacro:legs_links_joints reflect="1" side="L"/>
+	<xacro:legs_links_joints reflect="-1" side="R"/>
+
+
+<!-- ROS REP LINKS -->
+	<joint name="l_ankle_joint" type="fixed">
+		<parent link="LAnkle"/>
+		<child link="l_ankle"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+	</joint>
+	<link name="l_ankle"/>
+
+	<joint name="r_ankle_joint" type="fixed">
+		<parent link="RAnkle"/>
+		<child link="r_ankle"/>
+		<origin xyz="0 0 0" rpy="0 0 0"/>
+	</joint>
+	<link name="r_ankle"/>
+
+	<joint name="l_sole_joint" type="fixed">
+		<parent link="LFoot"/>
+		<child link="l_sole"/>
+		<origin xyz="0.0565 0.007 -0.04" rpy="0 0 0"/>
+	</joint>
+	<link name="l_sole"/>
+
+	<joint name="r_sole_joint" type="fixed">
+		<parent link="RFoot"/>
+		<child link="r_sole"/>
+		<origin xyz="0.0565 -0.007 -0.04" rpy="0 0 0"/>
+	</joint>
+	<link name="r_sole"/>
+</robot>

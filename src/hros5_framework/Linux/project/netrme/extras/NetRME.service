@@ -1,0 +1,13 @@
+[Unit]
+Description=NetRME
+After=network-online.target
+Requires=network-online.target
+
+[Service]
+ExecStart=/home/root/HROS1-Framework/Linux/project/netrme/./netrme
+Restart=on-failure
+RestartSec=10s
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

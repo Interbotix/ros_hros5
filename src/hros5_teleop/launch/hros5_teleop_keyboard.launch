@@ -1,0 +1,8 @@
+<?xml version="1.0"?>
+<launch>
+
+  <param name="scale_linear" value="2" type="double"/>
+  <param name="scale_angular" value="2" type="double"/>
+  <node pkg="hros5_teleop" type="hros5_teleop_keyboard" name="teleop" output="screen"/>
+
+</launch>

@@ -1,0 +1,11 @@
+<launch>
+
+  <node name="recognizer" pkg="pocketsphinx" type="recognizer.py">
+    <param name="lm" value="$(find pocketsphinx)/demo/timmy2.lm"/>
+    <param name="dict" value="$(find pocketsphinx)/demo/cmudict.dict"/>
+    <param name="mic_name" value="alsa_input.usb-PrimeSense_PrimeSense_Device-01-Device.analog-stereo"/>
+  </node>
+
+  <node name="voice_cmd_vel" pkg="pocketsphinx" type="voice_cmd_vel.py" output="screen"/>
+
+</launch>

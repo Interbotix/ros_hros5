@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="namespace" default="/hros5"/>
+  <group ns="$(arg namespace)">
+    <!--<include file="$(find hros5_camera)/launch/hros5_camera.launch"/>-->
+    <include file="$(find hros5_ros_control)/launch/hros5_ros_controller.launch"/>
+  </group>
+
+  <!-- xacro for visuals/collisions -->
+  <arg name="meshes_xacro" default="$(find hros5_description)/urdf/hros5_visuals_collisions_endoskeleton.xacro"/>
+  <!-- Load HR-OS5 Robot parameter file -->
+  <param name="robot_description" command="$(find xacro)/xacro.py $(find hros5_description)/urdf/hros5.xacro meshes_xacro_filename:=$(arg meshes_xacro)" />
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" >
+    <remap from="joint_states" to="hros5/joint_states" />
+  </node>
+
+<include file="$(find hros5_bringup)/launch/robot_localization_ekf.launch" />
+
+  <include file="$(find openni2_launch)/launch/openni2.launch" >
+    <arg name="publish_tf" value="false" />
+  </include>
+
+<include file="$(find hros5_bringup)/launch/rtabmap.launch" />
+
+  <include file="$(find hros5_teleop)/launch/hros5_teleop_controller.launch" />
+
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find hros5_bringup)/rviz/HROS5.rviz"/>
+
+</launch>

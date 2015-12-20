@@ -1,0 +1,6 @@
+<launch>
+  <!--Provide option to set namespace from outside-->
+  <arg name="namespace" default="/hros5"/>
+  <group ns="$(arg namespace)">
+   <node pkg="rviz" type="rviz" name="rviz" args="-d $(find hros5_bringup)/rviz/hros5.rviz"/>  </group>
+</launch>

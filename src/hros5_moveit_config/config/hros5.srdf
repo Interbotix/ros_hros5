@@ -1,0 +1,165 @@
+<?xml version="1.0" ?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot name="hros5">
+    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
+    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
+    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
+    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
+    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+    <group name="left_arm">
+        <chain base_link="torso" tip_link="l_wrist" />
+    </group>
+    <group name="right_arm">
+        <chain base_link="torso" tip_link="r_wrist" />
+    </group>
+    <group name="left_leg">
+        <chain base_link="torso" tip_link="l_sole" />
+    </group>
+    <group name="right_leg">
+        <chain base_link="torso" tip_link="r_sole" />
+    </group>
+    <group name="head">
+        <chain base_link="torso" tip_link="UpperHeadBase" />
+    </group>
+    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
+    <end_effector name="left_eef" parent_link="l_wrist" group="left_arm" />
+    <end_effector name="right_eef" parent_link="r_wrist" group="right_arm" />
+    <end_effector name="left_foot" parent_link="l_sole" group="left_leg" />
+    <end_effector name="right_foot" parent_link="r_sole" group="right_leg" />
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="virtual_joint" type="floating" parent_frame="odom" child_link="base_link" />
+    <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
+    <passive_joint name="virtual_joint" />
+    <passive_joint name="HeadPitchDummy" />
+    <passive_joint name="HeadPitchDummy2" />
+    <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="LAnkle" link2="LFoot" reason="Adjacent" />
+    <disable_collisions link1="LAnkle" link2="LTibia" reason="Adjacent" />
+    <disable_collisions link1="LAnkle" link2="LowerHead" reason="Never" />
+    <disable_collisions link1="LAnkle" link2="RShoulder" reason="Never" />
+    <disable_collisions link1="LAnkle" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="LAnkle" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="LAnkle" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="LFoot" link2="LowerHead" reason="Never" />
+    <disable_collisions link1="LFoot" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="LFoot" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="LFoot" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="LHip" link2="LHipMotors" reason="Adjacent" />
+    <disable_collisions link1="LHip" link2="LShoulder" reason="Adjacent" />
+    <disable_collisions link1="LHip" link2="LUpperArm" reason="Never" />
+    <disable_collisions link1="LHip" link2="LowerHead" reason="Adjacent" />
+    <disable_collisions link1="LHip" link2="RHip" reason="Adjacent" />
+    <disable_collisions link1="LHip" link2="RHipMotors" reason="Never" />
+    <disable_collisions link1="LHip" link2="RShoulder" reason="Adjacent" />
+    <disable_collisions link1="LHip" link2="RUpperArm" reason="Never" />
+    <disable_collisions link1="LHip" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="LHip" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="LHip" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="LHip" link2="torso" reason="Adjacent" />
+    <disable_collisions link1="LHipMotors" link2="LShoulder" reason="Never" />
+    <disable_collisions link1="LHipMotors" link2="LThigh" reason="Adjacent" />
+    <disable_collisions link1="LHipMotors" link2="LUpperArm" reason="Never" />
+    <disable_collisions link1="LHipMotors" link2="LowerHead" reason="Never" />
+    <disable_collisions link1="LHipMotors" link2="RHip" reason="Never" />
+    <disable_collisions link1="LHipMotors" link2="RShoulder" reason="Never" />
+    <disable_collisions link1="LHipMotors" link2="RUpperArm" reason="Never" />
+    <disable_collisions link1="LHipMotors" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="LHipMotors" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="LHipMotors" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="LHipMotors" link2="torso" reason="Never" />
+    <disable_collisions link1="LLowerArm" link2="LShoulder" reason="Never" />
+    <disable_collisions link1="LLowerArm" link2="LUpperArm" reason="Adjacent" />
+    <disable_collisions link1="LShoulder" link2="LThigh" reason="Never" />
+    <disable_collisions link1="LShoulder" link2="LTibia" reason="Never" />
+    <disable_collisions link1="LShoulder" link2="LUpperArm" reason="Adjacent" />
+    <disable_collisions link1="LShoulder" link2="LowerHead" reason="Adjacent" />
+    <disable_collisions link1="LShoulder" link2="RHip" reason="Adjacent" />
+    <disable_collisions link1="LShoulder" link2="RHipMotors" reason="Never" />
+    <disable_collisions link1="LShoulder" link2="RShoulder" reason="Adjacent" />
+    <disable_collisions link1="LShoulder" link2="RThigh" reason="Never" />
+    <disable_collisions link1="LShoulder" link2="RTibia" reason="Never" />
+    <disable_collisions link1="LShoulder" link2="RUpperArm" reason="Never" />
+    <disable_collisions link1="LShoulder" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="LShoulder" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="LShoulder" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="LShoulder" link2="torso" reason="Adjacent" />
+    <disable_collisions link1="LThigh" link2="LTibia" reason="Adjacent" />
+    <disable_collisions link1="LThigh" link2="LUpperArm" reason="Never" />
+    <disable_collisions link1="LThigh" link2="LowerHead" reason="Never" />
+    <disable_collisions link1="LThigh" link2="RShoulder" reason="Never" />
+    <disable_collisions link1="LThigh" link2="RUpperArm" reason="Never" />
+    <disable_collisions link1="LThigh" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="LThigh" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="LThigh" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="LThigh" link2="torso" reason="Never" />
+    <disable_collisions link1="LTibia" link2="LowerHead" reason="Never" />
+    <disable_collisions link1="LTibia" link2="RShoulder" reason="Never" />
+    <disable_collisions link1="LTibia" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="LTibia" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="LTibia" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="LUpperArm" link2="RHip" reason="Never" />
+    <disable_collisions link1="LUpperArm" link2="RHipMotors" reason="Never" />
+    <disable_collisions link1="LUpperArm" link2="RShoulder" reason="Never" />
+    <disable_collisions link1="LUpperArm" link2="RThigh" reason="Never" />
+    <disable_collisions link1="LUpperArm" link2="RTibia" reason="Never" />
+    <disable_collisions link1="LowerHead" link2="RAnkle" reason="Never" />
+    <disable_collisions link1="LowerHead" link2="RFoot" reason="Never" />
+    <disable_collisions link1="LowerHead" link2="RHip" reason="Adjacent" />
+    <disable_collisions link1="LowerHead" link2="RHipMotors" reason="Never" />
+    <disable_collisions link1="LowerHead" link2="RShoulder" reason="Adjacent" />
+    <disable_collisions link1="LowerHead" link2="RThigh" reason="Never" />
+    <disable_collisions link1="LowerHead" link2="RTibia" reason="Never" />
+    <disable_collisions link1="LowerHead" link2="UpperHeadBack" reason="Adjacent" />
+    <disable_collisions link1="LowerHead" link2="UpperHeadBase" reason="Adjacent" />
+    <disable_collisions link1="LowerHead" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="LowerHead" link2="torso" reason="Adjacent" />
+    <disable_collisions link1="RAnkle" link2="RFoot" reason="Adjacent" />
+    <disable_collisions link1="RAnkle" link2="RTibia" reason="Adjacent" />
+    <disable_collisions link1="RAnkle" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="RAnkle" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="RAnkle" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="RFoot" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="RFoot" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="RFoot" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="RHip" link2="RHipMotors" reason="Adjacent" />
+    <disable_collisions link1="RHip" link2="RShoulder" reason="Adjacent" />
+    <disable_collisions link1="RHip" link2="RUpperArm" reason="Never" />
+    <disable_collisions link1="RHip" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="RHip" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="RHip" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="RHip" link2="torso" reason="Adjacent" />
+    <disable_collisions link1="RHipMotors" link2="RShoulder" reason="Never" />
+    <disable_collisions link1="RHipMotors" link2="RThigh" reason="Adjacent" />
+    <disable_collisions link1="RHipMotors" link2="RUpperArm" reason="Never" />
+    <disable_collisions link1="RHipMotors" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="RHipMotors" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="RHipMotors" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="RHipMotors" link2="torso" reason="Never" />
+    <disable_collisions link1="RLowerArm" link2="RShoulder" reason="Never" />
+    <disable_collisions link1="RLowerArm" link2="RUpperArm" reason="Adjacent" />
+    <disable_collisions link1="RShoulder" link2="RThigh" reason="Never" />
+    <disable_collisions link1="RShoulder" link2="RTibia" reason="Never" />
+    <disable_collisions link1="RShoulder" link2="RUpperArm" reason="Adjacent" />
+    <disable_collisions link1="RShoulder" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="RShoulder" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="RShoulder" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="RShoulder" link2="torso" reason="Adjacent" />
+    <disable_collisions link1="RThigh" link2="RTibia" reason="Adjacent" />
+    <disable_collisions link1="RThigh" link2="RUpperArm" reason="Never" />
+    <disable_collisions link1="RThigh" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="RThigh" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="RThigh" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="RThigh" link2="torso" reason="Never" />
+    <disable_collisions link1="RTibia" link2="UpperHeadBack" reason="Never" />
+    <disable_collisions link1="RTibia" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="RTibia" link2="UpperHeadMotor" reason="Never" />
+    <disable_collisions link1="UpperHeadBack" link2="UpperHeadBase" reason="Never" />
+    <disable_collisions link1="UpperHeadBack" link2="UpperHeadMotor" reason="Default" />
+    <disable_collisions link1="UpperHeadBack" link2="torso" reason="Never" />
+    <disable_collisions link1="UpperHeadBase" link2="UpperHeadMotor" reason="Adjacent" />
+    <disable_collisions link1="UpperHeadBase" link2="torso" reason="Never" />
+    <disable_collisions link1="UpperHeadMotor" link2="torso" reason="Never" />
+</robot>

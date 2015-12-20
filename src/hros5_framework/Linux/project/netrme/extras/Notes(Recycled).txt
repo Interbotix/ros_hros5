@@ -1,0 +1,13 @@
+Extras Directory
+
+NetRME.service is a basic service example to have [software] automatically run at startup. To use this you must ensure the file location in the script is correct for your system and follow these instructions:
+
+Copy: NetRME.service to /lib/systemd/system/
+
+Execute: systemctl daemon-reload
+
+Execute: systemctl enable NetRME.service
+
+When you boot the latest build of [software] will run automatically.
+
+To debug or rebuild [software] you can use the ./stopService script.

@@ -1,0 +1,8 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: hros5_description
+    relative_path: urdf/hros5.urdf
+  SRDF:
+    relative_path: config/hros5.srdf
+  CONFIG:
+    generated_timestamp: 1424970969

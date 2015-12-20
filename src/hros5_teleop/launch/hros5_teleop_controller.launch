@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<launch>
+  <param name="scale_linear" value="2.0" type="double"/>
+  <param name="scale_angular" value="0.5" type="double"/>
+  <param name="scale_pan" value="0.2" type="double"/>
+  <param name="scale_tilt" value="0.2" type="double"/>
+  
+  <param name="axis_linear_forwards" value="1" type="double"/>
+  <param name="axis_linear_sidewards" value="0" type="double"/>
+  <param name="axis_angular" value="2" type="int"/>
+  <param name="axis_head_tilt" value="5" type="int"/>
+
+  <param name="button_standup" value="3" type="int"/> <!--DS4 - Triangle-->
+  <param name="button_sitdown" value="1" type="int"/> <!--DS4 - Cross-->
+  <param name="button_head_look" value="4" type="int"/> <!--DS4 - L1-->
+  <param name="button_toggle_walking" value="5" type="int"/> <!--DS4 - R1-->
+
+  <node pkg="joy" type="joy_node" name="joy_node" output="screen">
+    <param name="deadzone" value="0.15"/>
+    <param name="dev" value="/dev/input/js0"/>
+    <param name="autorepeat_rate" value="0"/>
+  </node>
+
+  <node pkg="hros5_teleop" type="hros5_teleop_controller" name="teleop" output="screen"/>
+
+</launch>

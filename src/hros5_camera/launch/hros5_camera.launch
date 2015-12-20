@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+
+<launch>
+  <!--Provide option to set namespace from outside-->
+  <arg name="namespace" default="/hros5"/>
+  <arg name="calib_url" default="$(find hros5_camera)/camera_info/camera.yaml"/>
+
+  <group ns="$(arg namespace)">
+
+
+    <node name="hros5_camera" pkg="hros5_camera" type="hros5_camera_node" respawn="false" output="screen" >
+<remap from="/hros5/image" to="/hros5/camera/image_raw" />
+    </node>
+  </group>
+   
+
+</launch>

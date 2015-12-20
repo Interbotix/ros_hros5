@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="namespace" default="/hros5"/>
+  
+  <group ns="$(arg namespace)">
+    <!--<include file="$(find hros5_camera)/launch/hros5_camera.launch"/>-->
+    <include file="$(find hros5_ros_control)/launch/hros5_ros_controller.launch"/>
+  </group>   
+<!--
+<include file="$(find openni2_launch)/launch/openni2.launch" >
+  <arg name="publish_tf" value="false" />
+</include>
+-->
+
+  <!-- Robot description 
+    <param name="robot_description"
+   command="$(find xacro)/xacro.py '$(find hros5_description)/robots/hros5.urdf.xacro'" />
+-->
+
+<!-- xacro for visuals/collisions -->
+<arg name="meshes_xacro" default="$(find hros5_description)/urdf/hros5_visuals_collisions_endoskeleton.xacro"/>
+
+<!-- Load HR-OS5 Robot parameter file -->
+<param name="robot_description" command="$(find xacro)/xacro.py $(find hros5_description)/urdf/hros5.xacro meshes_xacro_filename:=$(arg meshes_xacro)" />
+
+<!--
+<node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" >
+      <remap from="joint_states" to="hros5/joint_states" />
+    </node>
+-->
+
+<include file="$(find hros5_moveit_config)/launch/moveit_planner.launch" />
+<arg name="moveit_controller_manager" default="moveit_simple_controller_manager/MoveItSimpleControllerManager" />
+  <param name="moveit_controller_manager" value="$(arg moveit_controller_manager)"/>
+
+  <!-- load controller_list -->
+  <arg name="use_controller_manager" default="true" />
+  <param name="use_controller_manager" value="$(arg use_controller_manager)" />
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find hros5_moveit_config)/config/controllers.yaml"/>
+  
+</launch>
