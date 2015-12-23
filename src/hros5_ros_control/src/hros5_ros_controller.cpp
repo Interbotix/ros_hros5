@@ -67,7 +67,7 @@ void RobotisOPRosControllerNode::standSitCb( std_msgs::BoolConstPtr p_standing )
         action.data = 9;
         RobotHardwareInterface::Instance()->startAction(action); //Walk Ready
 
-position_.z = 0.14 + 0.24; //TODO: Calculate height.. See also: RobotHardwareInterface::cmdWalking
+position_.z = 0.12 + 0.24; //TODO: Calculate height.. See also: RobotHardwareInterface::cmdWalking
 
     }
     else

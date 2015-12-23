@@ -222,12 +222,13 @@ void RobotHardwareInterface::read(ros::Time time, ros::Duration period)
 
     //IMU
     double filter_alpha = 0.1;
+    double filter_alpha_gyro = 0.05;
 
 //TODO: NOTE: To at least use a complimentary filter on the imu readings we need a properly calibrated gyro value on each axis. Can we do this in Arbotix? Better yet, provide accurate pitch and roll from arbotix directly. Fuck this shit.
     //in rad/s
-    imu_angular_velocity_[0] = lowPassFilter(filter_alpha,((-cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0))+56.0142/*TODO: Calibrate 0*/,imu_angular_velocity_[0]);
-    imu_angular_velocity_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[1]);
-    imu_angular_velocity_[2] = lowPassFilter(filter_alpha,(-cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);
+    imu_angular_velocity_[0] = lowPassFilter(filter_alpha_gyro,((-cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0))+56.0142/*TODO: Calibrate 0*/,imu_angular_velocity_[0]);
+    imu_angular_velocity_[1] = lowPassFilter(filter_alpha_gyro,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[1]);
+    imu_angular_velocity_[2] = lowPassFilter(filter_alpha_gyro,(-cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);
 //ROS_INFO( "GyroX:\t%0.4f\tGyroY:\t%0.4f\tGyroZ:\t%0.4f", imu_angular_velocity_[0], imu_angular_velocity_[1], imu_angular_velocity_[2] );
 
     //in m/s^2
