@@ -76,4 +76,8 @@ roslaunch hros5_bringup r200_local_debug.launch
  - Gazebo
  - MoveIt
 
+### Contributing Repositories
 
+ - https://github.com/costashatz/HROS5
+ - https://github.com/ROBOTIS-OP/robotis_op_ros_control
+ - https://github.com/Interbotix/HROS5-Framework
