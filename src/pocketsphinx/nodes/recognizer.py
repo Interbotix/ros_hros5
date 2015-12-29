@@ -71,6 +71,7 @@ class recognizer(object):
         rospy.Service("~stop", Empty, self.stop)
 
         if rospy.has_param(self._lm_param) and rospy.has_param(self._dic_param):
+            self.say("Hello. My name is Timmy.")
             self.start_recognizer()
         else:
             rospy.logwarn("lm and dic parameters need to be set to start recognizer.")
@@ -106,6 +107,10 @@ class recognizer(object):
         self.bus_id = self.bus.connect('message::application', self.application_message)
         self.pipeline.set_state(gst.STATE_PLAYING)
         self.started = True
+        
+        subprocess.call('pacmd set-source-mute '+self.device_index+' true', shell=True)
+        #self.say("New Language Model")
+        subprocess.call('pacmd set-source-mute '+self.device_index+' false', shell=True)
 
     def pulse_index_from_name(self, name):
         output = commands.getstatusoutput("pacmd list-sources | grep -B 1 'name: <" + name + ">' | grep -o -P '(?<=index: )[0-9]*'")
@@ -167,15 +172,72 @@ class recognizer(object):
         """ Delete any previous selection, insert text and select it. """
         rospy.logdebug("Partial: " + hyp)
 
+    def say(self, phrase):
+        subprocess.call('echo "'+phrase+'" | festival --tts', shell=True)
+        #subprocess.call('espeak -a82 -p65 -s195 -g2 -k10 "'+phrase+'"', shell=True)
+
     def final_result(self, hyp, uttid):
         """ Insert the final result. """
         msg = String()
         msg.data = str(hyp.lower())
-        subprocess.call('pacmd set-source-mute '+self.device_index+' true', shell=True)
-        subprocess.call('espeak "'+msg.data+'"', shell=True)
-        subprocess.call('pacmd set-source-mute '+self.device_index+' false', shell=True)
         rospy.loginfo(msg.data)
         self.pub.publish(msg)
+
+
+        if msg.data == "help":
+            msg.data = "Let me help you. If you say, OK Robot, we can start a new conversation."
+        if msg.data == "help me":
+            msg.data = "Let me help you. Version2. If you say, OK Robot, we can start a new conversation."
+        if msg.data == "ok robot":
+            msg.data = "OK Robot. I am ready to receive a command. You can say, tell me a joke, restart, or demo mode."
+            self.stop_recognizer()
+            self._lm_param = "~level_one_lm"
+            self._dic_param = "~level_one_dic"
+            self.start_recognizer()
+        if msg.data == "robot":
+            msg.data = "Yes? I am a robot."
+
+        if msg.data == "tell me a joke":
+            msg.data = "Knock Knock.......Just Kidding."  
+        if msg.data == "restart":
+            msg.data = "I'll start over. To start a new conversation say OK Robot."
+            self.stop_recognizer()
+            self._lm_param = "~lm"
+            self._dic_param = "~dict"
+            self.start_recognizer()
+        if msg.data == "demo mode":
+            msg.data = "Ok Demo Mode. I'll listen for random words."
+            self.stop_recognizer()
+            self._lm_param = "~level_demo_lm"
+            self._dic_param = "~level_demo_dic"
+            self.start_recognizer()
+        if msg.data == "demo":
+            msg.data = "Ok Demo Mode. I'll listen for random words."
+            self.stop_recognizer()
+            self._lm_param = "~level_demo_lm"
+            self._dic_param = "~level_demo_dic"
+            self.start_recognizer()
+
+        if msg.data == "robot":
+            msg.data = "Yes?. I am a robot."
+        if msg.data == "why":
+            msg.data = "Why ask why?"
+        if msg.data == "you":
+            msg.data = "Who? Me?"
+        if msg.data == "yes":
+            msg.data = "Wonderful!"
+        if msg.data == "timmy":
+            msg.data = "Timmy loves timmy."
+        if msg.data == "hi":
+            msg.data = "Greetings!"
+        if msg.data == "no":
+            msg.data = "No? Are you sure??"
+        if msg.data == "shady":
+            msg.data = "I know Shady! She is my doggie friend"
+
+        subprocess.call('pacmd set-source-mute '+self.device_index+' true', shell=True)
+        self.say(msg.data)
+        subprocess.call('pacmd set-source-mute '+self.device_index+' false', shell=True)
 
 if __name__ == "__main__":
     start = recognizer()
