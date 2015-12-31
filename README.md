@@ -1,6 +1,6 @@
 # ros_hros5
 
-This is a work-in-progress version of a functioning ROS stack for the HR-OS5 robot. It's been composed of several open source projects and quite a bit of my time. I hope you find this useful. 
+This is a work-in-progress version of a functioning ROS stack for the HR-OS5 robot. It's been composed of several open source projects and a resonable amount of my time. I hope you find this useful. 
 
 Current hardware configuration:
 
@@ -23,11 +23,7 @@ Current hardware configuration:
 
 This I do not have compiled yet. Many packages were installed.
 
-* TODO
-
-#### Important:
-hros5_hardware_interface.cpp, lines 86-87 specify the motion binary and walk gait files are located in /robotis/Data/
-These are quite important to have in place. Ideally these should be loaded from $(find hros5_framework)/Data/
+* TODO. Please help if starting fresh.
 
 ### Launching
 

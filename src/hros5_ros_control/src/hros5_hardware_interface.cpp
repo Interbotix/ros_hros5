@@ -81,17 +81,17 @@ RobotHardwareInterface::RobotHardwareInterface()
     int wakeup_motion;
     nh.getParam("/hros5/hros5_ros_controller/wake_up_motion",wakeup_motion);
 
-    // Initialize ROBOTIS-OP Framework
+    // Initialize Original Framework
     cm730_device_ = std::string("/dev/ttyUSB0");
-    //TODO: These are hard coded to non-ROS directories. Should load from hros5_framework/Data/
-    action_file_ = std::string("/robotis/Data/motion_4096.bin");
-    config_file_ = std::string("/robotis/Data/config.ini");
+    nh.getParam("/hros5/hros5_ros_controller/hros5_config_file",config_file_);
+    nh.getParam("/hros5/hros5_ros_controller/hros5_action_file",action_file_);
 
     if(false == Action::GetInstance()->LoadFile((char *)action_file_.c_str()))
     {
-        ROS_ERROR("Reading Action File failed!");
+        ROS_FATAL("Reading Action File failed!");
+        ros::shutdown();
+        exit(-1);
     }
-
 
     linux_cm730_ = new LinuxCM730((char *)cm730_device_.c_str());
     cm730_ = new CM730(linux_cm730_);
