@@ -21,9 +21,35 @@ Current hardware configuration:
 
 ### Dependencies
 
-This I do not have compiled yet. Many packages were installed.
+````
+sudo apt-get install ros-indigo-joy
+sudo apt-get install python-rosinstall
+sudo apt-get install ros-indigo-robot-localization
+sudo apt-get install ros-indigo-rtabmap-ros
+sudo apt-get install ros-indigo-rtabmap
+````
 
-* TODO. Please help if starting fresh.
+##### Optional
+
+````
+sudo apt-get install ros-indigo-openni2-launch
+sudo apt-get install ros-indigo-pocketsphinx
+https://github.com/PercATI/RealSense_ROS
+````
+
+##### RobotisOP2 Related
+
+````
+echo "ulimit -r 31" >> ~/.bashrc
+sudo su
+echo "<username> hard rtprio 31" >> /etc/security/limits.conf
+
+sudo usermod -a -G dialout <username>
+
+sudo apt-get install ros-indigo-effort-controllers ros-indigo-joint-state-controller ros-indigo-joint-state-publisher ros-indigo-controller-manager ros-indigo-imu-sensor-controller ros-indigo-position-controllers 
+
+Copy Finddarwin_lib.cmake from ../src/hros5_framework to /usr/share/cmake-2.8/Modules
+````
 
 ### Launching
 
