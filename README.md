@@ -1,6 +1,6 @@
 # ros_hros5
 
-This is a work-in-progress version of a functioning ROS stack for the HR-OS5 robot. It's been composed of several open source projects and a resonable amount of my time. I hope you find this useful. 
+This is a work-in-progress version of a functioning ROS stack for the HR-OS5 robot. It's been composed of several open source projects and a resonable amount of my time. I hope you find this useful.
 
 Current hardware configuration:
 
@@ -47,8 +47,6 @@ echo "<username> hard rtprio 31" >> /etc/security/limits.conf
 sudo usermod -a -G dialout <username>
 
 sudo apt-get install ros-indigo-effort-controllers ros-indigo-joint-state-controller ros-indigo-joint-state-publisher ros-indigo-controller-manager ros-indigo-imu-sensor-controller ros-indigo-position-controllers 
-
-Copy Finddarwin_lib.cmake from ../src/hros5_framework to /usr/share/cmake-2.8/Modules
 ````
 
 ### Launching
@@ -70,7 +68,7 @@ roslaunch hros5_bringup primesense_local_debug.launch
 ##### Intel R200
 To launch with an Intel R200 (defined to be mounted on the front of the head tilt servo) I'm currenly performing a little work around to allow RTAB-Map to work at the R200's optimal resolution.
 
-First launch your R200 camera. 
+First launch your R200 camera.
 ```
 roslaunch realsense realsense_r200_launch.launch
 ```
@@ -94,7 +92,7 @@ roslaunch hros5_bringup r200_local_debug.launch
 
 ### Todos
 
- - Many, search TODO in the source. 
+ - Many, search TODO in the source.
  - Gazebo
  - MoveIt
 
