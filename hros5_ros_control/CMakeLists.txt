@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(hros5_ros_control)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../hros5_framework/")
+
 # detect architecture
 #set(CMAKE_BUILD_TYPE Debug)
 #set(CMAKE_BUILD_TYPE Release)
