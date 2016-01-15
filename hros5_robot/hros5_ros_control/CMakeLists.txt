@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(hros5_ros_control)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../hros5_misc/hros5_framework/")
+
 # detect architecture
 #set(CMAKE_BUILD_TYPE Debug)
 #set(CMAKE_BUILD_TYPE Release)
@@ -26,7 +28,7 @@ find_package(catkin REQUIRED COMPONENTS
 
 # Darwin-OP interface library
 
-SET(DARWIN_LIB_PATH ../hros5_framework/)
+SET(DARWIN_LIB_PATH ../../hros5_misc/hros5_framework/)
 find_package(darwin_lib REQUIRED)
 #MESSAGE(STATUS "${darwin_lib_INCLUDE_DIR}")
 
