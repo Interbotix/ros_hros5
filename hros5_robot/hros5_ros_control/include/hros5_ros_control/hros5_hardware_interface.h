@@ -110,8 +110,8 @@ protected:
     ros::Time imu_timestamp;
 
     //Robot
-    Robot::LinuxCM730 *linux_cm730_;
-    Robot::CM730 *cm730_;
+    Robot::LinuxArbotixPro *linux_cm730_;
+    Robot::ArbotixPro *cm730_;
     Robot::LinuxMotionTimer *motion_timer_;
     std::string cm730_device_, action_file_, config_file_;
 
