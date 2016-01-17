@@ -20,33 +20,40 @@ Current hardware configuration:
  - ROS Indigo
 
 ### Dependencies
+The Interbotix HROS5-Framework is required in /src/hros5_misc/hros5_framework
 
+````
+git clone https://github.com/Interbotix/HROS5-Framework ./src/ros_misc/hros5_framework
+cd src/ros_misc/hros5_framework/Linux/build/
+make
+````
+
+ROS packages:
 ````
 sudo apt-get install ros-indigo-joy
 sudo apt-get install python-rosinstall
 sudo apt-get install ros-indigo-robot-localization
 sudo apt-get install ros-indigo-rtabmap-ros
 sudo apt-get install ros-indigo-rtabmap
+sudo apt-get install ros-indigo-effort-controllers ros-indigo-joint-state-controller ros-indigo-joint-state-publisher ros-indigo-controller-manager ros-indigo-imu-sensor-controller ros-indigo-position-controllers 
 ````
 
-##### Optional
+##### Other requirements
 
-````
-sudo apt-get install ros-indigo-openni2-launch
-sudo apt-get install ros-indigo-pocketsphinx
-https://github.com/PercATI/RealSense_ROS
-````
-
-##### RobotisOP2 Related
-
+Grant local user real-time access to the Arbotix Pro:
 ````
 echo "ulimit -r 31" >> ~/.bashrc
 sudo su
 echo "<username> hard rtprio 31" >> /etc/security/limits.conf
 
 sudo usermod -a -G dialout <username>
+````
+##### Optional (configuration dependant)
 
-sudo apt-get install ros-indigo-effort-controllers ros-indigo-joint-state-controller ros-indigo-joint-state-publisher ros-indigo-controller-manager ros-indigo-imu-sensor-controller ros-indigo-position-controllers 
+````
+sudo apt-get install ros-indigo-openni2-launch
+sudo apt-get install ros-indigo-pocketsphinx
+https://github.com/PercATI/RealSense_ROS
 ````
 
 ### Launching
