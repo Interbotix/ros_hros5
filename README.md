@@ -23,8 +23,8 @@ Current hardware configuration:
 The Interbotix HROS5-Framework is required in /src/hros5_misc/hros5_framework
 
 ````
-git clone https://github.com/Interbotix/HROS5-Framework ./src/ros_misc/hros5_framework
-cd src/ros_misc/hros5_framework/Linux/build/
+git clone https://github.com/Interbotix/HROS5-Framework ./src/hros5_misc/hros5_framework
+cd src/hros5_misc/hros5_framework/Linux/build/
 make
 ````
 
