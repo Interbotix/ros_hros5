@@ -5,12 +5,7 @@
     <rosparam file="$(find hros5_ros_control)/config/initialization.yaml" command="load" />
     <!-- Load joint controller configurations from YAML file to parameter server -->
     <rosparam file="$(find hros5_ros_control)/config/hros5_states.yaml" command="load" />
-    <!-- <rosparam file="$(find hros5_ros_control)/config/hros5_position_controllers.yaml" command="load" /> -->
     <rosparam file="$(find hros5_ros_control)/config/hros5_trajectory_controllers.yaml" command="load" />
-
-    <!-- <node name="controller_spawner" pkg="controller_manager" type="spawner" respawn="false" output="screen"
-      args="joint_state_controller
-            imu_sensor_controller"/> -->
 
     <node name="hros5_ros_controller" pkg="hros5_ros_control" type="hros5_ros_controller" respawn="true" output="screen" >
       <rosparam file="$(find hros5_ros_control)/config/hros5_controller_config.yaml" command="load"/>

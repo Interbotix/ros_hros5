@@ -1,4 +1,4 @@
-hros5:
+# hros5:
 # Publish all joint states -----------------------------------
   joint_state_controller:
     type: joint_state_controller/JointStateController
