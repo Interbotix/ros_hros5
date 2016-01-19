@@ -93,8 +93,8 @@ RobotHardwareInterface::RobotHardwareInterface()
         exit(-1);
     }
 
-    linux_cm730_ = new LinuxCM730((char *)cm730_device_.c_str());
-    cm730_ = new CM730(linux_cm730_);
+    linux_cm730_ = new LinuxArbotixPro((char *)cm730_device_.c_str());
+    cm730_ = new ArbotixPro(linux_cm730_);
     MotionManager::GetInstance();
 
     if(false == MotionManager::GetInstance()->Initialize(cm730_))
@@ -109,18 +109,13 @@ RobotHardwareInterface::RobotHardwareInterface()
 
     MotionManager::GetInstance()->AddModule((MotionModule*)Action::GetInstance());
 
-    motion_timer_ = new LinuxMotionTimer(MotionManager::GetInstance());
+    motion_timer_ = new LinuxMotionTimer();
+    motion_timer_->Initialize(MotionManager::GetInstance());
     ROS_INFO("Starting Motion Timer...");
     motion_timer_->Start();
     ROS_INFO("Finished starting Motion Timer");
 
     MotionManager::GetInstance()->SetEnable(true);
- 
-/*
-//TODO: RREMOVE this, here because I don't feel like reflashing the Chappie head atm    
-sleep(1);
-cm730_->WriteByte(ID_EMOHEAD, EMOHead::REG_MODE, EMOHead::COMMAND, 0);
-*/
 
     /** Init(stand up) pose */
     ROS_INFO("Wake up position is %i",wakeup_motion);
@@ -227,15 +222,15 @@ void RobotHardwareInterface::read(ros::Time time, ros::Duration period)
 
 //TODO: NOTE: To at least use a complimentary filter on the imu readings we need a properly calibrated gyro value on each axis. Can we do this in Arbotix? Better yet, provide accurate pitch and roll from arbotix directly. Fuck this shit.
     //in rad/s
-    imu_angular_velocity_[0] = lowPassFilter(filter_alpha_gyro,((-cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0))+56.0142/*TODO: Calibrate 0*/,imu_angular_velocity_[0]);
-    imu_angular_velocity_[1] = lowPassFilter(filter_alpha_gyro,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[1]);
-    imu_angular_velocity_[2] = lowPassFilter(filter_alpha_gyro,(-cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);
+    imu_angular_velocity_[0] = lowPassFilter(filter_alpha_gyro,((-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0))+56.0142/*TODO: Calibrate 0*/,imu_angular_velocity_[0]);
+    imu_angular_velocity_[1] = lowPassFilter(filter_alpha_gyro,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[1]);
+    imu_angular_velocity_[2] = lowPassFilter(filter_alpha_gyro,(-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);
 //ROS_INFO( "GyroX:\t%0.4f\tGyroY:\t%0.4f\tGyroZ:\t%0.4f", imu_angular_velocity_[0], imu_angular_velocity_[1], imu_angular_velocity_[2] );
 
     //in m/s^2
-    imu_linear_acceleration_[0] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_ACCEL_Y_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[0]);
-    imu_linear_acceleration_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_ACCEL_X_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[1]);
-    imu_linear_acceleration_[2] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_ACCEL_Z_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[2]);
+    imu_linear_acceleration_[0] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_Y_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[0]);
+    imu_linear_acceleration_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_X_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[1]);
+    imu_linear_acceleration_[2] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_Z_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[2]);
 //ROS_INFO( "AccelX: %0.4f AccelY: %0.4f AccelZ: %0.4f", imu_linear_acceleration_[0], imu_linear_acceleration_[1], imu_linear_acceleration_[2] );
 
     //Estimation of roll and pitch based on accelometer data, see http://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/
@@ -266,14 +261,14 @@ void RobotHardwareInterface::read(ros::Time time, ros::Duration period)
     double filter_alpha = 0.5;
 
     //in rad/s
-    imu_angular_velocity_[0] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[0]);
-    imu_angular_velocity_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[1]);
-    imu_angular_velocity_[2] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);
+    imu_angular_velocity_[0] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[0]);
+    imu_angular_velocity_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[1]);
+    imu_angular_velocity_[2] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);
 
     //in m/s^2
-    imu_linear_acceleration_[0] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_ACCEL_X_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[0]);
-    imu_linear_acceleration_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_ACCEL_Y_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[1]);
-    imu_linear_acceleration_[2] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[CM730::ID_CM].ReadWord(CM730::P_ACCEL_Z_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[2]);
+    imu_linear_acceleration_[0] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_X_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[0]);
+    imu_linear_acceleration_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_Y_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[1]);
+    imu_linear_acceleration_[2] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_Z_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[2]);
 
     //Estimation of roll and pitch based on accelometer data, see http://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/
     double sign = copysignf(1.0,  imu_linear_acceleration_[2]/G_ACC);
@@ -342,7 +337,7 @@ void RobotHardwareInterface::setJointStateRate(double joint_state_rate)
 void RobotHardwareInterface::setTorqueOn(int id, bool enable)
 {
     int error;
-    cm730_->WriteByte(id, MX28::P_TORQUE_ENABLE, enable ? 1 : 0, &error);
+    cm730_->WriteByte(id, MXDXL::P_TORQUE_ENABLE, enable ? 1 : 0, &error);
 }
 
 void RobotHardwareInterface::setTorqueOn(bool enable)
@@ -353,7 +348,7 @@ void RobotHardwareInterface::setTorqueOn(bool enable)
         ROS_INFO("Disable torque!");
 
     int error;
-    cm730_->WriteByte(CM730::ID_BROADCAST, MX28::P_TORQUE_ENABLE, enable, &error);
+    cm730_->WriteByte(ArbotixPro::ID_BROADCAST, MXDXL::P_TORQUE_ENABLE, enable, &error);
 }
 
 void RobotHardwareInterface::cmdWalking(const geometry_msgs::Twist::ConstPtr& msg)
