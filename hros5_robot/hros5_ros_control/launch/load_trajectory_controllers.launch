@@ -5,10 +5,12 @@
 
 
   <!-- load the controllers -->
-    <node name="trajectory_controller_spawner" pkg="controller_manager" type="spawner" ns="$(arg namespace)" respawn="false"
-    output="screen" args="left_arm_traj_controller
-right_arm_traj_controller
-left_leg_traj_controller
-right_leg_traj_controller
-head_traj_controller"/>
+    <node name="trajectory_controller_spawner" pkg="controller_manager" type="spawner" ns="$(arg namespace)" respawn="false" output="screen"
+      args="/hros5/left_arm_traj_controller
+      /hros5/right_arm_traj_controller
+      /hros5/left_leg_traj_controller
+      /hros5/right_leg_traj_controller
+      /hros5/head_traj_controller
+      /hros5/joint_state_controller
+      /hros5/imu_sensor_controller"/>
 </launch>

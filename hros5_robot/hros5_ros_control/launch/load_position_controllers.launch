@@ -1,28 +1,30 @@
 <?xml version="1.0"?>
 
-<launch>  
+<launch>
  <arg name="namespace" default="/hros5"/>
 
  <!-- load position controllers -->
  <node name="position_controller_spawner" pkg="controller_manager" type="spawner" ns="$(arg namespace)" respawn="false" output="screen"
-   args="RShoulderPitch_position_controller
-   LShoulderPitch_position_controller
-   RShoulderRoll_position_controller
-   LShoulderRoll_position_controller
-   RElbowPitch_position_controller
-   LElbowPitch_position_controller
-   RHipYaw_position_controller
-   LHipYaw_position_controller
-   RHipRoll_position_controller
-   LHipRoll_position_controller
-   RHipPitch_position_controller
-   LHipPitch_position_controller
-   RKneePitch_position_controller
-   LKneePitch_position_controller
-   RAnklePitch_position_controller
-   LAnklePitch_position_controller
-   RAnkleRoll_position_controller
-   LAnkleRoll_position_controller
-   HeadYaw_position_controller
-   HeadPitch_position_controller"/>
+   args="/hros5/RShoulderPitch_position_controller
+   /hros5/LShoulderPitch_position_controller
+   /hros5/RShoulderRoll_position_controller
+   /hros5/LShoulderRoll_position_controller
+   /hros5/RElbowPitch_position_controller
+   /hros5/LElbowPitch_position_controller
+   /hros5/RHipYaw_position_controller
+   /hros5/LHipYaw_position_controller
+   /hros5/RHipRoll_position_controller
+   /hros5/LHipRoll_position_controller
+   /hros5/RHipPitch_position_controller
+   /hros5/LHipPitch_position_controller
+   /hros5/RKneePitch_position_controller
+   /hros5/LKneePitch_position_controller
+   /hros5/RAnklePitch_position_controller
+   /hros5/LAnklePitch_position_controller
+   /hros5/RAnkleRoll_position_controller
+   /hros5/LAnkleRoll_position_controller
+   /hros5/HeadYaw_position_controller
+   /hros5/HeadPitch_position_controller
+   /hros5/joint_state_controller
+   /hros5/imu_sensor_controller"/>
 </launch>
