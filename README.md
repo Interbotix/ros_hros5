@@ -28,18 +28,25 @@ cd src/hros5_misc/hros5_framework/Linux/build/
 make
 ````
 
-ROS packages:
+####ROS packages:
 ````
 sudo apt-get install ros-indigo-joy
 sudo apt-get install python-rosinstall
 sudo apt-get install ros-indigo-robot-localization
 sudo apt-get install ros-indigo-rtabmap-ros
 sudo apt-get install ros-indigo-rtabmap
+sudo apt-get install ros-indigo-joint-trajectory-controller
 sudo apt-get install ros-indigo-effort-controllers ros-indigo-joint-state-controller ros-indigo-joint-state-publisher ros-indigo-controller-manager ros-indigo-imu-sensor-controller ros-indigo-position-controllers 
 ````
 
-##### Other requirements
+##### Optional (configuration dependant)
+````
+sudo apt-get install ros-indigo-openni2-launch
+sudo apt-get install ros-indigo-pocketsphinx
+https://github.com/PercATI/RealSense_ROS
+````
 
+##### Other requirements
 Grant local user real-time access to the Arbotix Pro:
 ````
 echo "ulimit -r 31" >> ~/.bashrc
@@ -48,21 +55,21 @@ echo "<username> hard rtprio 31" >> /etc/security/limits.conf
 
 sudo usermod -a -G dialout <username>
 ````
-##### Optional (configuration dependant)
-
-````
-sudo apt-get install ros-indigo-openni2-launch
-sudo apt-get install ros-indigo-pocketsphinx
-https://github.com/PercATI/RealSense_ROS
-````
 
 ### Launching
 
 ##### No Sensors
-
 To launch without extra sensors and mapping (ie. Teleoperation only)
 ```
 roslaunch hros5_bringup basic_no_mapping.launch
+```
+
+##### MoveIt!
+To launch with MoveIt compatibiity bring up the hros5_controller with trajectory controllers then launch the MoveIt Planner.
+**NOTE: There are known (joint positioning) issues with using the DarwinOP Action Pages and Walk Gait in conjunction with the MoveIt Planner.
+```
+roslaunch hros5_bringup basic_no_mapping_traj.launch
+roslaunch hros5_moveit_config moveit_planner.launch
 ```
 
 ##### PrimeSense
@@ -101,7 +108,6 @@ roslaunch hros5_bringup r200_local_debug.launch
 
  - Many, search TODO in the source.
  - Gazebo
- - MoveIt
 
 ### Contributing Repositories
 
