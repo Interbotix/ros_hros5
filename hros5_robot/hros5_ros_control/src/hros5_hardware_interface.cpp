@@ -294,7 +294,7 @@ void RobotHardwareInterface::write(ros::Time time, ros::Duration period)
 {
     if(!controller_running_)
     {
-        if (!std::isnan(cmd_[0]))
+        if (!std::isnan(cmd_[JointData::NUMBER_OF_JOINTS-1]))
         {
             setBlockWrite(false);
             controller_running_=true;
@@ -314,7 +314,7 @@ void RobotHardwareInterface::write(ros::Time time, ros::Duration period)
         {
             if (std::isnan(cmd_[joint_index]))
             {
-                ROS_WARN("Cmd %i NAN", joint_index);
+                //ROS_WARN("Cmd %i NAN", joint_index);
                 continue;
             }
             else
