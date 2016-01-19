@@ -48,6 +48,7 @@ public:
     void startAction(std_msgs::Int32 action);
     void checkFall();
     bool checkIsWalking(void);
+    double getPeriodTime(void);
 
     // Typedefs
     typedef boost::shared_ptr<RobotHardwareInterface> Ptr;
@@ -104,6 +105,8 @@ protected:
     double imu_orientation_[4];
     double imu_angular_velocity_[3];
     double imu_linear_acceleration_[3];
+    double imu_gyro_zero_[3];
+    int imu_gyro_calibrated_;
 
     double filtered_pitch;
     double filtered_roll;

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-  <param name="scale_linear" value="2.0" type="double"/>
-  <param name="scale_angular" value="0.5" type="double"/>
+  <param name="scale_linear" value="30.0" type="double"/> <!-- Max millimeters per step-->
+  <param name="scale_angular" value="25.0" type="double"/><!-- Max degrees per step-->
   <param name="scale_pan" value="0.2" type="double"/>
   <param name="scale_tilt" value="0.2" type="double"/>
   

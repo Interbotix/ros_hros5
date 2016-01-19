@@ -101,9 +101,11 @@ Visualization Manager:
           Value: true
         base_link:
           Value: true
-        camera_color_optical_frame:
+        camera_depth_frame_link:
           Value: true
         camera_depth_optical_frame:
+          Value: true
+        camera_rgb_optical_frame:
           Value: true
         gaze:
           Value: true
@@ -158,13 +160,16 @@ Visualization Manager:
                   UpperHeadBase:
                     UpperHeadMotor:
                       {}
+                    camera_depth_frame_link:
+                      {}
+                    camera_depth_optical_frame:
+                      {}
+                    camera_rgb_optical_frame:
+                      {}
                     gaze:
                       {}
                     realsense_frame:
-                      camera_color_optical_frame:
-                        {}
-                      camera_depth_optical_frame:
-                        {}
+                      {}
                 RHip:
                   RHipMotors:
                     RThigh:
@@ -306,6 +311,18 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        camera_depth_frame_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_depth_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        camera_rgb_optical_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         gaze:
           Alpha: 1
           Show Axes: false
@@ -351,7 +368,7 @@ Visualization Manager:
       Visual Enabled: true
     - Class: rviz/Image
       Enabled: true
-      Image Topic: /camera/color/image_raw
+      Image Topic: /camera/rgb/image_raw
       Max Value: 1
       Median window: 10
       Min Value: 0
@@ -493,7 +510,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz/Orbit
-      Distance: 2.63056
+      Distance: 2.21632
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.06
         Stereo Focal Distance: 1
@@ -505,10 +522,10 @@ Visualization Manager:
         Z: 0.583634
       Name: Current View
       Near Clip Distance: 0.01
-      Pitch: 0.4698
+      Pitch: 0.0148001
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 1.73802
+      Yaw: 2.20802
     Saved: ~
 Window Geometry:
   Displays:

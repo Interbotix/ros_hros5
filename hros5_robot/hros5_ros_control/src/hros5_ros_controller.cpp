@@ -41,9 +41,12 @@ void RobotisOPRosControllerNode::setTorqueOn(std_msgs::BoolConstPtr enable)
 void RobotisOPRosControllerNode::cmdVelCb(const geometry_msgs::Twist::ConstPtr& msg)
 {
     RobotHardwareInterface::Instance()->cmdWalking(msg);
-    gait_vel_.linear.x = msg->linear.x/2.0;
-    gait_vel_.linear.y = msg->linear.y/2.0;
-    gait_vel_.angular.z = msg->angular.z;
+
+    double period_time = RobotHardwareInterface::Instance()->getPeriodTime();
+
+    gait_vel_.linear.x = (msg->linear.x/1000.0)/(period_time/1000.0)*2.0;
+    gait_vel_.linear.y = (msg->linear.y/1000.0)/(period_time/1000.0)*2.0;
+    gait_vel_.angular.z = (msg->angular.z/57.2958)/(period_time/1000.0)/2.0;
 }
 
 void RobotisOPRosControllerNode::startActionCb(std_msgs::Int32 action)
@@ -65,17 +68,14 @@ void RobotisOPRosControllerNode::standSitCb( std_msgs::BoolConstPtr p_standing )
         action.data = 9;
         RobotHardwareInterface::Instance()->startAction(action); //Walk Ready
 
-position_.z = 0.12 + 0.24; //TODO: Calculate height.. See also: RobotHardwareInterface::cmdWalking
-
+        position_.z = 0.12; //TODO: Calculate height..
     }
     else
     {
         action.data = 15;
         RobotHardwareInterface::Instance()->startAction(action); //Sit down
 
-position_.z = 0.24; //TODO: configurable
-
-
+        position_.z = 0.0;
     }
 }
 
@@ -153,8 +153,8 @@ void RobotisOPRosControllerNode::publishOdometry( const geometry_msgs::Twist &ga
     double delta_th = vth * dt;
     pose_th_ += delta_th;
 
-    double vx = gait_vel.linear.x/635*100.0; //TODO
-    double vy = gait_vel.linear.y/635*100.0; //TODO
+    double vx = gait_vel.linear.x;
+    double vy = gait_vel.linear.y;
     double delta_x = ( vx * cos( pose_th_ ) - vy * sin( pose_th_ ) ) * dt;
     double delta_y = ( vx * sin( pose_th_ ) + vy * cos( pose_th_ ) ) * dt;
     pose_x_ += delta_x;

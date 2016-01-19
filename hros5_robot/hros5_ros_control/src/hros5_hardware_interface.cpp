@@ -73,6 +73,7 @@ RobotHardwareInterface::RobotHardwareInterface()
     , joint_state_intervall_(30.0)
     , last_joint_state_read_(ros::Time::now())
 {
+    imu_gyro_calibrated_ = false;
     print_check_fall_debug_info_ = false;
     block_write_ = true;
     controller_running_ = false;
@@ -217,72 +218,61 @@ void RobotHardwareInterface::read(ros::Time time, ros::Duration period)
     }
 
     //IMU
-    double filter_alpha = 0.1;
+    double filter_alpha = 0.25;
     double filter_alpha_gyro = 0.05;
 
-//TODO: NOTE: To at least use a complimentary filter on the imu readings we need a properly calibrated gyro value on each axis. Can we do this in Arbotix? Better yet, provide accurate pitch and roll from arbotix directly. Fuck this shit.
-    //in rad/s
-    imu_angular_velocity_[0] = lowPassFilter(filter_alpha_gyro,((-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0))+56.0142/*TODO: Calibrate 0*/,imu_angular_velocity_[0]);
-    imu_angular_velocity_[1] = lowPassFilter(filter_alpha_gyro,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[1]);
-    imu_angular_velocity_[2] = lowPassFilter(filter_alpha_gyro,(-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);
-//ROS_INFO( "GyroX:\t%0.4f\tGyroY:\t%0.4f\tGyroZ:\t%0.4f", imu_angular_velocity_[0], imu_angular_velocity_[1], imu_angular_velocity_[2] );
-
-    //in m/s^2
-    imu_linear_acceleration_[0] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_Y_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[0]);
-    imu_linear_acceleration_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_X_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[1]);
-    imu_linear_acceleration_[2] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_Z_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[2]);
-//ROS_INFO( "AccelX: %0.4f AccelY: %0.4f AccelZ: %0.4f", imu_linear_acceleration_[0], imu_linear_acceleration_[1], imu_linear_acceleration_[2] );
-
-    //Estimation of roll and pitch based on accelometer data, see http://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/
-    double sign = copysignf(1.0,  imu_linear_acceleration_[2]/G_ACC);
-    double roll = atan2( imu_linear_acceleration_[1]/G_ACC, sign * sqrt( imu_linear_acceleration_[0]/G_ACC* imu_linear_acceleration_[0]/G_ACC +  imu_linear_acceleration_[2]/G_ACC* imu_linear_acceleration_[2]/G_ACC));
-    double pitch = -atan2( imu_linear_acceleration_[0]/G_ACC, sqrt( imu_linear_acceleration_[1]/G_ACC* imu_linear_acceleration_[1]/G_ACC +  imu_linear_acceleration_[2]/G_ACC* imu_linear_acceleration_[2]/G_ACC));
-    double yaw = 0.0;
-    
-    //TODO: Testing complimentary filter
-    ros::Duration duration = ros::Time::now() - imu_timestamp;
-    imu_timestamp = ros::Time::now();
-    filtered_pitch = 0.9 * ( filtered_pitch + ( duration.toSec() * imu_angular_velocity_[1] ) ) + ( 0.1 * pitch );
-    filtered_roll = 0.9 * ( filtered_roll + ( duration.toSec() * imu_angular_velocity_[0] ) ) + ( 0.1 * -roll );
-
-//ROS_INFO( "gyro, roll, filtered roll: %0.4f, %0.4f, %0.4f", imu_angular_velocity_[0], roll, filtered_roll );
-//ROS_INFO( "gyro scale: %0.4f gyro y: %0.4f pitch: %0.4f filtered pitch: %0.4f roll: %0.4f", duration.toSec(), imu_angular_velocity_[1], pitch*57.2958, filtered_pitch*57.2958, roll *57.2958 );
-
-    tf2::Quaternion imu_orient;
-    imu_orient.setEuler(filtered_roll, filtered_pitch, 0); //yaw, pitch, roll
-    imu_orientation_[0] = imu_orient.getX();
-    imu_orientation_[1] = imu_orient.getY();
-    imu_orientation_[2] = imu_orient.getZ();
-    imu_orientation_[3] = imu_orient.getW();
-//ROS_INFO( "-----------------------------------------------------------" );
-
-/*ORIGINAL
-    //IMU
-    double filter_alpha = 0.5;
-
-    //in rad/s
-    imu_angular_velocity_[0] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[0]);
+//TODO: NOTE: We need a properly calibrated gyro value on each axis. Can we do this in Arbotix? Better yet, provide accurate pitch and roll from arbotix directly.
+if ( imu_gyro_calibrated_ < 100 )
+{
+    imu_angular_velocity_[0] = lowPassFilter(filter_alpha,(-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[0]);
     imu_angular_velocity_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[1]);
-    imu_angular_velocity_[2] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);
+    imu_angular_velocity_[2] = lowPassFilter(filter_alpha,(-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);    
+    ++imu_gyro_calibrated_;
+    if ( imu_gyro_calibrated_ == 100 )
+    {
+        imu_gyro_zero_[0] = imu_angular_velocity_[0];
+        imu_gyro_zero_[1] = imu_angular_velocity_[1];
+        imu_gyro_zero_[2] = imu_angular_velocity_[2];
+        ROS_INFO( "Gyro Zero Offset Calibration: GyroX:\t%0.4f\tGyroY:\t%0.4f\tGyroZ:\t%0.4f", imu_gyro_zero_[0], imu_gyro_zero_[1], imu_gyro_zero_[2] );
+    }
+
+    return;
+}
+
+    //in rad/s
+    imu_angular_velocity_[0] = lowPassFilter(filter_alpha_gyro,((-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0))-imu_gyro_zero_[0],imu_angular_velocity_[0]);
+    imu_angular_velocity_[1] = lowPassFilter(filter_alpha_gyro,((cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0))-imu_gyro_zero_[1],imu_angular_velocity_[1]);
+    imu_angular_velocity_[2] = lowPassFilter(filter_alpha_gyro,((-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0))-imu_gyro_zero_[2],imu_angular_velocity_[2]);
+//ROS_INFO( "GyroX:\t%0.4f\tGyroY:\t%0.4f\tGyroZ:\t%0.4f", imu_angular_velocity_[0], imu_angular_velocity_[1], imu_angular_velocity_[2] );
 
     //in m/s^2
     imu_linear_acceleration_[0] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_X_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[0]);
     imu_linear_acceleration_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_Y_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[1]);
     imu_linear_acceleration_[2] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_ACCEL_Z_L)-512)*G_ACC*4.0/512.0,imu_linear_acceleration_[2]);
+//ROS_INFO( "AccelX: %0.4f AccelY: %0.4f AccelZ: %0.4f", imu_linear_acceleration_[0], imu_linear_acceleration_[1], imu_linear_acceleration_[2] );
 
     //Estimation of roll and pitch based on accelometer data, see http://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/
     double sign = copysignf(1.0,  imu_linear_acceleration_[2]/G_ACC);
-    double roll = atan2( imu_linear_acceleration_[1]/G_ACC, sign * sqrt( imu_linear_acceleration_[0]/G_ACC* imu_linear_acceleration_[0]/G_ACC +  imu_linear_acceleration_[2]/G_ACC* imu_linear_acceleration_[2]/G_ACC));
+    double roll = -atan2( imu_linear_acceleration_[1]/G_ACC, sign * sqrt( imu_linear_acceleration_[0]/G_ACC* imu_linear_acceleration_[0]/G_ACC +  imu_linear_acceleration_[2]/G_ACC* imu_linear_acceleration_[2]/G_ACC));
     double pitch = -atan2( imu_linear_acceleration_[0]/G_ACC, sqrt( imu_linear_acceleration_[1]/G_ACC* imu_linear_acceleration_[1]/G_ACC +  imu_linear_acceleration_[2]/G_ACC* imu_linear_acceleration_[2]/G_ACC));
     double yaw = 0.0;
 
-    tf2::Quaternion imu_orient;
-    imu_orient.setRPY(roll, pitch, yaw);
+//ROS_INFO( "pitch: %0.2fdeg roll: %0.2fdeg", pitch*57.2958, roll*57.2958 );
 
+    //TODO: Testing complimentary filter
+    ros::Duration duration = ros::Time::now() - imu_timestamp;
+    imu_timestamp = ros::Time::now();
+    filtered_pitch = 0.85 * ( filtered_pitch + ( duration.toSec() * imu_angular_velocity_[1] ) ) + ( 0.15 * pitch );
+    filtered_roll = 0.85 * ( filtered_roll + ( duration.toSec() * imu_angular_velocity_[0] ) ) + ( 0.15 * roll );
+
+//ROS_INFO( "filtered_pitch: %0.2fdeg filtered_roll: %0.2fdeg", filtered_pitch*57.2958, filtered_roll*57.2958 );
+
+    tf2::Quaternion imu_orient;
+    imu_orient.setEuler(filtered_roll, filtered_pitch, 0.0); //TODO: Quaternion.setEuler(yaw, pitch, roll)?
     imu_orientation_[0] = imu_orient.getX();
     imu_orientation_[1] = imu_orient.getY();
     imu_orientation_[2] = imu_orient.getZ();
-*/
+    imu_orientation_[3] = imu_orient.getW();
 }
 
 void RobotHardwareInterface::write(ros::Time time, ros::Duration period)
@@ -353,11 +343,12 @@ void RobotHardwareInterface::setTorqueOn(bool enable)
 
 void RobotHardwareInterface::cmdWalking(const geometry_msgs::Twist::ConstPtr& msg)
 {
-    double period = Walking::GetInstance()->PERIOD_TIME;
-    Walking::GetInstance()->X_MOVE_AMPLITUDE=(msg->linear.x/period*1000.0*10.0);
-    Walking::GetInstance()->Y_MOVE_AMPLITUDE=(msg->linear.y/period*1000.0*10.0);
-    // compute the angular motion parameters to achieve the desired angular speed
-    Walking::GetInstance()->A_MOVE_AMPLITUDE=(msg->angular.z*57.2958);
+    Walking::GetInstance()->X_MOVE_AMPLITUDE=(msg->linear.x);
+    Walking::GetInstance()->Y_MOVE_AMPLITUDE=(msg->linear.y);
+    Walking::GetInstance()->A_MOVE_AMPLITUDE=(msg->angular.z);
+
+//ROS_INFO( "X: %0.1fmm/step Commanded", msg->linear.x );
+//ROS_INFO( "A: %0.1fdegrees/period Commanded", msg->angular.z );
 
     //ROS_INFO( "Walking GetBodySwingZ: %0.2f", Walking::GetInstance()->GetBodySwingZ() );
     //ROS_INFO("Walking: period %f x %f y %f a %f",Walking::GetInstance()->PERIOD_TIME,Walking::GetInstance()->X_MOVE_AMPLITUDE,Walking::GetInstance()->Y_MOVE_AMPLITUDE,Walking::GetInstance()->A_MOVE_AMPLITUDE);
@@ -391,6 +382,11 @@ void RobotHardwareInterface::enableWalking(std_msgs::BoolConstPtr enable)
 bool RobotHardwareInterface::checkIsWalking(void)
 {
     return Walking::GetInstance()->IsRunning();
+}
+
+double RobotHardwareInterface::getPeriodTime(void)
+{
+    return Walking::GetInstance()->PERIOD_TIME;
 }
 
 void RobotHardwareInterface::checkFall()
