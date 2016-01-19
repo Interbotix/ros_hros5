@@ -19,13 +19,11 @@ RobotisOPRosControllerNode::RobotisOPRosControllerNode()
     stand_sit_sub_ = nh.subscribe("standing_sitting", 100, &RobotisOPRosControllerNode::standSitCb, this);
     imu_sub_ = nh.subscribe("imu", 100, &RobotisOPRosControllerNode::imuCb, this);
 
-//Publish topics
-odom_pub_ = nh.advertise<nav_msgs::Odometry>( "odom", 50 );
-current_time = ros::Time::now();
-last_time = ros::Time::now();
-
-//Specify sitting height
-//position_.z = 0.24; //TODO: configurable //TODO: Does not work when I change value here.
+    //Publish topics
+    odom_pub_ = nh.advertise<nav_msgs::Odometry>( "odom", 50 );
+    
+    current_time = ros::Time::now();
+    last_time = ros::Time::now();
 
     ROS_INFO("Initialization of ros controller completed!");
 }
@@ -92,7 +90,7 @@ void RobotisOPRosControllerNode::imuCb(const sensor_msgs::Imu& msg)
     transform.transform.rotation.x = msg.orientation.y;
     transform.transform.rotation.y = -msg.orientation.x;
     transform.transform.rotation.z = msg.orientation.z;
-    tf_broadcaster_.sendTransform(transform);
+    //TODO: Fix IMU rotation transform: tf_broadcaster_.sendTransform(transform);
 }
 
 void RobotisOPRosControllerNode::dynamicReconfigureCb(hros5_ros_control::hros5_ros_controlConfig &config, uint32_t level)
@@ -205,12 +203,6 @@ void RobotisOPRosControllerNode::publishOdometry( const geometry_msgs::Twist &ga
     odom.twist.covariance = odom.pose.covariance; // needed?
 
     odom_pub_.publish( odom );
-
-if ( position_.z == 0 )
-{
-//Specify sitting height
-position_.z = 0.24; //TODO: TTESTING: DO NOT LEAVE THIS HERE
-}
 
     last_time = current_time;
 }
