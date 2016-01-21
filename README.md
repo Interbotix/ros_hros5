@@ -1,6 +1,6 @@
 # ros_hros5
 
-This is a work-in-progress version of a functioning ROS stack for the HR-OS5 robot. It's been composed of several open source projects and a resonable amount of my time. I hope you find this useful.
+This is a work-in-progress ROS package for the HR-OS5 humanoid research platform. It is a collaborate effort composed of several open source projects.
 
 Current hardware configuration:
 
@@ -28,7 +28,7 @@ cd src/hros5_misc/hros5_framework/Linux/build/
 make
 ````
 
-####ROS packages:
+##### ROS packages:
 ````
 sudo apt-get install ros-indigo-joy
 sudo apt-get install python-rosinstall
@@ -87,7 +87,7 @@ First launch your R200 camera.
 roslaunch realsense realsense_r200_launch.launch
 ```
 
-I should note my camera is configured to launch with the following modifications:
+I should note the R200 is configured to launch with the following modifications:
 ```
   <arg name="cHeight" default="480" />
   <arg name="cWidth" default="640" />
