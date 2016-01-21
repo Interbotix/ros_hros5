@@ -50,7 +50,6 @@ geometry_msgs::Quaternion imu_orientation_;
     void enableWalkCb(std_msgs::BoolConstPtr enable);
     void cmdVelCb(const geometry_msgs::Twist::ConstPtr& msg);
     void startActionCb(std_msgs::Int32 action);
-    void imuCb(const sensor_msgs::Imu& msg);
 
     // Subscriber
     ros::Subscriber torque_on_sub_;
@@ -58,7 +57,6 @@ geometry_msgs::Quaternion imu_orientation_;
     ros::Subscriber start_action_sub_;
     ros::Subscriber enable_walk_sub_;
     ros::Subscriber stand_sit_sub_;
-    ros::Subscriber imu_sub_;
 
     // Publisher
     tf::TransformBroadcaster tf_broadcaster_;

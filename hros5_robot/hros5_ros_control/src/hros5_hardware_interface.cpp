@@ -161,6 +161,15 @@ RobotHardwareInterface::RobotHardwareInterface()
     registerInterface(&imu_sensor_interface_);
 
     imu_timestamp = ros::Time::now();
+
+    filtered_pitch = 0.0;
+    filtered_roll = 0.0;
+    imu_angular_velocity_[0] = 0.0;
+    imu_angular_velocity_[1] = 0.0;
+    imu_angular_velocity_[2] = 0.0;
+    imu_linear_acceleration_[0] = 0.0;
+    imu_linear_acceleration_[1] = 0.0;
+    imu_linear_acceleration_[2] = 0.0;
 }
 
 RobotHardwareInterface::RobotHardwareInterface(RobotHardwareInterface const&)
@@ -225,8 +234,8 @@ void RobotHardwareInterface::read(ros::Time time, ros::Duration period)
 if ( imu_gyro_calibrated_ < 100 )
 {
     imu_angular_velocity_[0] = lowPassFilter(filter_alpha,(-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[0]);
-    imu_angular_velocity_[1] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[1]);
-    imu_angular_velocity_[2] = lowPassFilter(filter_alpha,(-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);    
+    imu_angular_velocity_[1] = lowPassFilter(filter_alpha,(-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[1]);
+    imu_angular_velocity_[2] = lowPassFilter(filter_alpha,(cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0),imu_angular_velocity_[2]);    
     ++imu_gyro_calibrated_;
     if ( imu_gyro_calibrated_ == 100 )
     {
@@ -234,6 +243,7 @@ if ( imu_gyro_calibrated_ < 100 )
         imu_gyro_zero_[1] = imu_angular_velocity_[1];
         imu_gyro_zero_[2] = imu_angular_velocity_[2];
         ROS_INFO( "Gyro Zero Offset Calibration: GyroX:\t%0.4f\tGyroY:\t%0.4f\tGyroZ:\t%0.4f", imu_gyro_zero_[0], imu_gyro_zero_[1], imu_gyro_zero_[2] );
+        imu_timestamp = ros::Time::now();
     }
 
     return;
@@ -241,8 +251,8 @@ if ( imu_gyro_calibrated_ < 100 )
 
     //in rad/s
     imu_angular_velocity_[0] = lowPassFilter(filter_alpha_gyro,((-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_X_L)-512)*1600.0*M_PI/(512.0*180.0))-imu_gyro_zero_[0],imu_angular_velocity_[0]);
-    imu_angular_velocity_[1] = lowPassFilter(filter_alpha_gyro,((cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0))-imu_gyro_zero_[1],imu_angular_velocity_[1]);
-    imu_angular_velocity_[2] = lowPassFilter(filter_alpha_gyro,((-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0))-imu_gyro_zero_[2],imu_angular_velocity_[2]);
+    imu_angular_velocity_[1] = lowPassFilter(filter_alpha_gyro,((-cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Y_L)-512)*1600.0*M_PI/(512.0*180.0))-imu_gyro_zero_[1],imu_angular_velocity_[1]);
+    imu_angular_velocity_[2] = lowPassFilter(filter_alpha_gyro,((cm730_->m_BulkReadData[ArbotixPro::ID_CM].ReadWord(ArbotixPro::P_GYRO_Z_L)-512)*1600.0*M_PI/(512.0*180.0))-imu_gyro_zero_[2],imu_angular_velocity_[2]);
 //ROS_INFO( "GyroX:\t%0.4f\tGyroY:\t%0.4f\tGyroZ:\t%0.4f", imu_angular_velocity_[0], imu_angular_velocity_[1], imu_angular_velocity_[2] );
 
     //in m/s^2
@@ -254,7 +264,7 @@ if ( imu_gyro_calibrated_ < 100 )
     //Estimation of roll and pitch based on accelometer data, see http://theccontinuum.com/2012/09/24/arduino-imu-pitch-roll-from-accelerometer/
     double sign = copysignf(1.0,  imu_linear_acceleration_[2]/G_ACC);
     double roll = -atan2( imu_linear_acceleration_[1]/G_ACC, sign * sqrt( imu_linear_acceleration_[0]/G_ACC* imu_linear_acceleration_[0]/G_ACC +  imu_linear_acceleration_[2]/G_ACC* imu_linear_acceleration_[2]/G_ACC));
-    double pitch = -atan2( imu_linear_acceleration_[0]/G_ACC, sqrt( imu_linear_acceleration_[1]/G_ACC* imu_linear_acceleration_[1]/G_ACC +  imu_linear_acceleration_[2]/G_ACC* imu_linear_acceleration_[2]/G_ACC));
+    double pitch = atan2( imu_linear_acceleration_[0]/G_ACC, sqrt( imu_linear_acceleration_[1]/G_ACC* imu_linear_acceleration_[1]/G_ACC +  imu_linear_acceleration_[2]/G_ACC* imu_linear_acceleration_[2]/G_ACC));
     double yaw = 0.0;
 
 //ROS_INFO( "pitch: %0.2fdeg roll: %0.2fdeg", pitch*57.2958, roll*57.2958 );
@@ -268,7 +278,7 @@ if ( imu_gyro_calibrated_ < 100 )
 //ROS_INFO( "filtered_pitch: %0.2fdeg filtered_roll: %0.2fdeg", filtered_pitch*57.2958, filtered_roll*57.2958 );
 
     tf2::Quaternion imu_orient;
-    imu_orient.setEuler(filtered_roll, filtered_pitch, 0.0); //TODO: Quaternion.setEuler(yaw, pitch, roll)?
+    imu_orient.setEuler(filtered_pitch, /*filtered_roll*/0.0, 0.0); //TODO: Quaternion.setEuler(yaw, pitch, roll)?
     imu_orientation_[0] = imu_orient.getX();
     imu_orientation_[1] = imu_orient.getY();
     imu_orientation_[2] = imu_orient.getZ();

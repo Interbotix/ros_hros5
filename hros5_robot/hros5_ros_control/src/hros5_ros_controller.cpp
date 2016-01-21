@@ -17,13 +17,14 @@ RobotisOPRosControllerNode::RobotisOPRosControllerNode()
     start_action_sub_ = nh.subscribe("start_action", 100, &RobotisOPRosControllerNode::startActionCb, this);
     enable_walk_sub_ = nh.subscribe("enable_walking", 100, &RobotisOPRosControllerNode::enableWalkCb, this);
     stand_sit_sub_ = nh.subscribe("standing_sitting", 100, &RobotisOPRosControllerNode::standSitCb, this);
-    imu_sub_ = nh.subscribe("imu", 100, &RobotisOPRosControllerNode::imuCb, this);
 
     //Publish topics
     odom_pub_ = nh.advertise<nav_msgs::Odometry>( "odom", 50 );
     
     current_time = ros::Time::now();
     last_time = ros::Time::now();
+
+    position_.z = 0.24; //Torso height 240mm in sitting position
 
     ROS_INFO("Initialization of ros controller completed!");
 }
@@ -46,7 +47,7 @@ void RobotisOPRosControllerNode::cmdVelCb(const geometry_msgs::Twist::ConstPtr& 
 
     gait_vel_.linear.x = (msg->linear.x/1000.0)/(period_time/1000.0)*2.0;
     gait_vel_.linear.y = (msg->linear.y/1000.0)/(period_time/1000.0)*2.0;
-    gait_vel_.angular.z = (msg->angular.z/57.2958)/(period_time/1000.0)/2.0;
+    gait_vel_.angular.z = (msg->angular.z/57.2958)/(period_time/1000.0)*0.66;
 }
 
 void RobotisOPRosControllerNode::startActionCb(std_msgs::Int32 action)
@@ -68,29 +69,15 @@ void RobotisOPRosControllerNode::standSitCb( std_msgs::BoolConstPtr p_standing )
         action.data = 9;
         RobotHardwareInterface::Instance()->startAction(action); //Walk Ready
 
-        position_.z = 0.12; //TODO: Calculate height..
+        position_.z = 0.24 + 0.12; //TODO: Calculate height..
     }
     else
     {
         action.data = 15;
         RobotHardwareInterface::Instance()->startAction(action); //Sit down
 
-        position_.z = 0.0;
+        position_.z = 0.24;
     }
-}
-
-void RobotisOPRosControllerNode::imuCb(const sensor_msgs::Imu& msg)
-{
-    geometry_msgs::TransformStamped transform;
-    transform.header.stamp = msg.header.stamp;
-    transform.header.frame_id = "base_link";
-    transform.child_frame_id = "torso";
-    transform.transform.rotation.w = msg.orientation.w;
-    //ROS and ROBITIS x and y frame definitions deviate by 90 degree around z axis
-    transform.transform.rotation.x = msg.orientation.y;
-    transform.transform.rotation.y = -msg.orientation.x;
-    transform.transform.rotation.z = msg.orientation.z;
-    //TODO: Fix IMU rotation transform: tf_broadcaster_.sendTransform(transform);
 }
 
 void RobotisOPRosControllerNode::dynamicReconfigureCb(hros5_ros_control::hros5_ros_controlConfig &config, uint32_t level)
@@ -132,7 +119,6 @@ if ( !RobotHardwareInterface::Instance()->checkIsWalking() ) //TODO: If we are n
     gait_vel_.linear.y = 0.0;
     gait_vel_.angular.z = 0.0;
 }
-
 
     publishOdometry( gait_vel_ );
 
