@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(hros5_camera)
 
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../hros5_misc/hros5_framework/")
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 # detect architecture
 #set(CMAKE_BUILD_TYPE Debug)
