@@ -56,6 +56,16 @@ echo "<username> hard rtprio 31" >> /etc/security/limits.conf
 sudo usermod -a -G dialout <username>
 ````
 
+### Robot Models
+
+Two robot models are now available. The default configuration is the endoskeleton only and the alternate configuration contains a mix of the v2 and v3 3D printable armor/shells as well as a custom head design for the PrimeSense sensor. Expect the alternate configuration to change in time as development progresses. 
+
+To use the alternate visual and collision models specify `hros5_visuals_collisions_armored.xacro` in your launch files.
+```
+<!-- xacro for visuals/collisions -->
+<arg name="meshes_xacro" default="$(find hros5_description)/urdf/hros5_visuals_collisions_armored.xacro"/>
+```
+
 ### Launching
 
 ##### No Sensors
