@@ -1,0 +1,75 @@
+hros5:
+  # Publish all joint states -----------------------------------
+  joint_state_controller:
+    type: joint_state_controller/JointStateController
+    publish_rate: 50  
+
+  # Controllers ------------------------------------------------
+  Head_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - HeadYaw
+      - HeadPitch
+    gains:
+      HeadYaw: {p: 100.0, i: 0.01, d: 10.0}
+      HeadPitch: {p: 100.0, i: 0.01, d: 10.0}
+  LeftArm_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - LShoulderPitch
+      - LShoulderRoll
+      - LElbowPitch
+    gains:
+      LShoulderPitch: {p: 100.0, i: 0.01, d: 10.0}
+      LShoulderRoll: {p: 100.0, i: 0.01, d: 10.0}
+      LElbowPitch: {p: 100.0, i: 0.01, d: 10.0}
+  RightArm_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - RShoulderPitch
+      - RShoulderRoll
+      - RElbowPitch
+    gains:
+      RShoulderPitch: {p: 100.0, i: 0.01, d: 10.0}
+      RShoulderRoll: {p: 100.0, i: 0.01, d: 10.0}
+      RElbowPitch: {p: 100.0, i: 0.01, d: 10.0}
+  LeftLeg_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - LHipYaw
+      - LHipRoll
+      - LHipPitch
+      - LKneePitch
+    gains:
+      LHipYaw: {p: 100.0, i: 0.01, d: 10.0}
+      LHipRoll: {p: 100.0, i: 0.01, d: 10.0}
+      LHipPitch: {p: 100.0, i: 0.01, d: 10.0}
+      LKneePitch: {p: 100.0, i: 0.01, d: 10.0}
+  RightLeg_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - RHipYaw
+      - RHipRoll
+      - RHipPitch
+      - RKneePitch
+    gains:
+      RHipYaw: {p: 100.0, i: 0.01, d: 10.0}
+      RHipRoll: {p: 100.0, i: 0.01, d: 10.0}
+      RHipPitch: {p: 100.0, i: 0.01, d: 10.0}
+      RKneePitch: {p: 100.0, i: 0.01, d: 10.0}
+  LeftFoot_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - LAnklePitch
+      - LAnkleRoll
+    gains:
+      LAnklePitch: {p: 100.0, i: 0.01, d: 10.0}
+      LAnkleRoll: {p: 100.0, i: 0.01, d: 10.0}
+  RightFoot_controller:
+    type: effort_controllers/JointTrajectoryController
+    joints:
+      - RAnklePitch
+      - RAnkleRoll
+    gains:
+      RAnklePitch: {p: 100.0, i: 0.01, d: 10.0}
+      RAnkleRoll: {p: 100.0, i: 0.01, d: 10.0}

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<launch>
+
+  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <rosparam file="$(find hros5_control)/config/hros5_position_control.yaml" command="load"/>
+
+  <!-- load the controllers -->
+  <node name="hros5_controller" pkg="controller_manager" type="spawner" respawn="false"
+    output="screen" ns="/hros5" args="/hros5/HeadYaw_position_controller /hros5/HeadPitch_position_controller /hros5/LShoulderPitch_position_controller /hros5/LShoulderRoll_position_controller /hros5/LElbowPitch_position_controller /hros5/RShoulderPitch_position_controller /hros5/RShoulderRoll_position_controller /hros5/RElbowPitch_position_controller /hros5/LHipYaw_position_controller /hros5/LHipRoll_position_controller /hros5/LHipPitch_position_controller /hros5/LKneePitch_position_controller /hros5/LAnklePitch_position_controller /hros5/LAnkleRoll_position_controller /hros5/RHipYaw_position_controller /hros5/RHipRoll_position_controller /hros5/RHipPitch_position_controller /hros5/RKneePitch_position_controller /hros5/RAnklePitch_position_controller /hros5/RAnkleRoll_position_controller /hros5/joint_state_controller"/>
+
+  <!-- convert joint states to TF transforms for rviz, etc -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher"
+    respawn="false" output="screen">
+    <remap from="/joint_states" to="/hros5/joint_states" />
+  </node>
+
+</launch>
