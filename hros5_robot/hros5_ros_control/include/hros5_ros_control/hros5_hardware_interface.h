@@ -20,6 +20,7 @@
 #include <hardware_interface/joint_state_interface.h>
 #include <hardware_interface/imu_sensor_interface.h>
 #include <hardware_interface/robot_hw.h>
+#include <hros5_ros_control/hros5_ros_controlConfig.h>
 
 namespace hros5
 {
@@ -37,6 +38,11 @@ public:
     // ROS Control
     void read(ros::Time time, ros::Duration period);
     void write(ros::Time time, ros::Duration period);
+    hros5_ros_control::hros5_ros_controlConfig ros_control_config;
+    void storeROSControlConfig( hros5_ros_control::hros5_ros_controlConfig & c_config )
+    {
+        m_ros_control_config_ = c_config;
+    }
 
     //Acess to ROBOTIS Interface
     void setPIDGains(int id, double p_gain, double i_gain, double d_gain);
@@ -44,7 +50,10 @@ public:
     void setTorqueOn(int id, bool enable);
     void setTorqueOn(bool enable);
     void enableWalking(std_msgs::BoolConstPtr enable);
+    void enableWalking();
+    void disableWalking();
     void cmdWalking(const geometry_msgs::Twist::ConstPtr& msg);
+    void cmdWalkingROSUnits(const geometry_msgs::Twist::ConstPtr& msg);
     void startAction(std_msgs::Int32 action);
     void checkFall();
     bool checkIsWalking(void);
@@ -89,6 +98,8 @@ protected:
 
 
     // ros control interfaces
+    hros5_ros_control::hros5_ros_controlConfig m_ros_control_config_;
+    void restoreROSControlConfig(void);
     hardware_interface::JointStateInterface joint_state_interface_;
     hardware_interface::PositionJointInterface pos_joint_interface_;
     hardware_interface::ImuSensorInterface imu_sensor_interface_;
@@ -123,6 +134,10 @@ protected:
     bool block_write_;
     bool controller_running_; //to handle conflicts between ROS control and motion manager
 
+    ros::Publisher is_fallen_pub_;
+    ros::Publisher is_walking_pub_;
+    std_msgs::Bool msg_is_walking_;
+    std_msgs::Bool msg_is_fallen_;
 
 };
 }

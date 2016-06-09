@@ -37,6 +37,8 @@ protected:
     geometry_msgs::Twist gait_vel_;
     geometry_msgs::Point position_;
     
+    bool ignore_teleop_;
+    
     ros::Time current_time, last_time;
 double pose_x_; // pose/odometry
 double pose_y_; // pose/odometry
@@ -49,11 +51,13 @@ geometry_msgs::Quaternion imu_orientation_;
     void standSitCb( std_msgs::BoolConstPtr p_standing );
     void enableWalkCb(std_msgs::BoolConstPtr enable);
     void cmdVelCb(const geometry_msgs::Twist::ConstPtr& msg);
+    void cmdNavVelCb(const geometry_msgs::Twist::ConstPtr& msg);
     void startActionCb(std_msgs::Int32 action);
 
     // Subscriber
     ros::Subscriber torque_on_sub_;
     ros::Subscriber cmd_vel_sub_;
+    ros::Subscriber navigation_cmd_vel_sub_;
     ros::Subscriber start_action_sub_;
     ros::Subscriber enable_walk_sub_;
     ros::Subscriber stand_sit_sub_;

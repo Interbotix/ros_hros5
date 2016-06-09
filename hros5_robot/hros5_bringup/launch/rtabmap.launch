@@ -2,10 +2,19 @@
 <!-- rtabmap launch file -->
 
 <launch>
+  <!-- Laser Scan -->
+   <node pkg="nodelet" type="nodelet" name="depthimage_to_laserscan" args="load depthimage_to_laserscan/DepthImageToLaserScanNodelet camera/camera_nodelet_manager" >
+        <param name="scan_height" value="10" />
+        <param name="output_frame_id" value="base_link" />
+        <remap from="image" to="/camera/depth_registered/image_raw" />
+        <remap from="camera/image" to="/camera/depth_registered/image_raw" />
+        <remap from="camera/scan" to="scan" />
+    </node>
+
     <group ns="rtabmap">
         <node name="rtabmap" pkg="rtabmap_ros" type="rtabmap" args="--delete_db_on_start">
           <param name="frame_id" type="string" value="base_link"/>
-		  <param name="odom_frame_id" type="string" value="odom"/>
+      <param name="odom_frame_id" type="string" value="odom"/>
           <param name="publish_tf" type="bool" value="true"/>
           <param name="subscribe_depth" type="bool" value="true"/>
 
@@ -17,6 +26,9 @@
 
           <param name="queue_size" type="int" value="10"/>
 
+          <param name="subscribe_laserScan" type="bool" value="true"/>
+          <remap from="scan" to="/scan"/>
+          
           <!-- RTAB-Map's parameters -->
           <param name="RGBD/OptimizeFromGraphEnd" type="string" value="false"/>
           <param name="Kp/MaxDepth" type="string" value="4.0"/>
@@ -30,8 +42,10 @@
           <param name="Mem/RehearsalSimilarity" type="string" value="0.45"/>
         </node>
          <!--  <node pkg="rtabmap_ros" type="grid_map_assembler" name="grid_map_assembler"/>  -->
-		<node pkg="rtabmap_ros" type="map_assembler" name="map_assembler">
-		  <param name="occupancy_grid" value="true"/>
+    <node pkg="rtabmap_ros" type="map_assembler" name="map_assembler">
+      <param name="occupancy_grid" value="true"/>
         </node>
     </group>
+
 </launch>
+

@@ -80,11 +80,11 @@ HROS5TeleopController::HROS5TeleopController():
 
     joint_states_sub_ = nh_.subscribe("/hros5/joint_states", 100, &HROS5TeleopController::jointStatesCb, this);
 
-    tilt_pub_ = nh_.advertise<std_msgs::Float64>("/hros5/HeadPitch_position_controller/command", 100);
-    panh_pub_ = nh_.advertise<std_msgs::Float64>("/hros5/HeadYaw_position_controller/command", 100);
-    actionh_pub_ = nh_.advertise<std_msgs::Int32>("/hros5/start_action", 100);
-    enable_walking_pub_ = nh_.advertise<std_msgs::Bool>("/hros5/enable_walking", 100);
-    sit_stand_pub_ = nh_.advertise<std_msgs::Bool>("/hros5/standing_sitting", 100);
+    tilt_pub_ = nh_.advertise<std_msgs::Float64>("/hros5/HeadPitch_position_controller/command", 2);
+    panh_pub_ = nh_.advertise<std_msgs::Float64>("/hros5/HeadYaw_position_controller/command", 2);
+    actionh_pub_ = nh_.advertise<std_msgs::Int32>("/hros5/start_action", 2);
+    enable_walking_pub_ = nh_.advertise<std_msgs::Bool>("/hros5/enable_walking", 2);
+    sit_stand_pub_ = nh_.advertise<std_msgs::Bool>("/hros5/standing_sitting", 2);
 
     vel_pub_ = nh_.advertise<geometry_msgs::Twist>("hros5/cmd_vel", 1);
     joy_sub_ = nh_.subscribe<sensor_msgs::Joy>("joy", 10, &HROS5TeleopController::joyCallback, this);
@@ -149,7 +149,7 @@ void HROS5TeleopController::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
         }
     }
 
-    if ( /*walking_enabled ==*/ true ) //TODO: Sending joystick data at all times
+    if ( /*TODO: walking_enabled ==*/ true )
     {
         //TODO: Use twist stamped so controller can determine if a timeout occurs
         geometry_msgs::Twist vel;
@@ -163,7 +163,7 @@ void HROS5TeleopController::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
     {
         std_msgs::Float64 angle_msg;
         
-        if ( tilt < 0.24 && joy->axes[axis_head_tilt] > 0.0 ) //TODO: Configurable limit?
+        if ( tilt < 0.57 && joy->axes[axis_head_tilt] > 0.0 ) //TODO: Configurable limit?
         {
             angle_msg.data = tilt+tilt_scale_*joy->axes[axis_head_tilt];
             tilt_pub_.publish(angle_msg);
@@ -174,16 +174,22 @@ void HROS5TeleopController::joyCallback(const sensor_msgs::Joy::ConstPtr& joy)
             tilt_pub_.publish(angle_msg);
         }
         
-        angle_msg.data = pan+panh_scale_*joy->axes[axis_angular_];
-        panh_pub_.publish(angle_msg);
+        if ( pan < 0.6 && joy->axes[axis_angular_] > 0.0 || pan > -0.6 && joy->axes[axis_angular_] < 0.0) //TODO: Configurable limit?
+        {
+            angle_msg.data = pan+panh_scale_*joy->axes[axis_angular_];
+            panh_pub_.publish(angle_msg);
+        }
     }
 }
 
 
 void HROS5TeleopController::jointStatesCb(const sensor_msgs::JointState& msg)
 {
-    pan = msg.position.at(1); //TODO: msg.position.at unsafe to configuration changes
-    tilt = msg.position.at(0); //TODO: msg.position.at unsafe to configuration changes
+    if ( msg.name.at(1) == "HeadYaw" )    pan = msg.position.at(1);
+    else ROS_ERROR_STREAM( "JointStates msg.at(1) is not 'HeadYaw': Cannot update HeadYaw with value from: " << msg.name.at(1) );
+
+    if ( msg.name.at(0) == "HeadPitch")    tilt = msg.position.at(0);
+    else ROS_ERROR_STREAM( "JointStates msg.at(0) is not 'HeadPitch': Cannot update HeadPitch with value from: " << msg.name.at(0) );
 }
 
 int main(int argc, char** argv)

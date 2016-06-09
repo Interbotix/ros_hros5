@@ -1,1 +1,1 @@
-hros5_ros_controller/wake_up_motion: 15   # stand up: 9 crouched: 15
+hros5_ros_controller/wake_up_motion: 9   # stand up: 9 crouched: 15

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <launch>
-  <param name="scale_linear" value="30.0" type="double"/> <!-- Max millimeters per step-->
-  <param name="scale_angular" value="25.0" type="double"/><!-- Max degrees per step-->
+  <param name="scale_linear" value="25.0" type="double"/> <!-- Max millimeters per step-->
+  <param name="scale_angular" value="15.0" type="double"/><!-- Max degrees per step-->
   <param name="scale_pan" value="0.2" type="double"/>
   <param name="scale_tilt" value="0.2" type="double"/>
   
@@ -18,7 +18,7 @@
   <node pkg="joy" type="joy_node" name="joy_node" output="screen">
     <param name="deadzone" value="0.15"/>
     <param name="dev" value="/dev/input/js0"/>
-    <param name="autorepeat_rate" value="0"/>
+    <param name="autorepeat_rate" value="25"/>
   </node>
 
   <node pkg="hros5_teleop" type="hros5_teleop_controller" name="teleop" output="screen"/>

@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="namespace" default="/hros5"/>
+  <group ns="$(arg namespace)">
+    <!--<include file="$(find hros5_camera)/launch/hros5_camera.launch"/>-->
+    <include file="$(find hros5_ros_control)/launch/hros5_ros_controller.launch"/>
+  </group>
+
+  <!-- xacro for visuals/collisions -->
+  <arg name="meshes_xacro" default="$(find hros5_description)/urdf/hros5_visuals_collisions_armored.xacro"/>
+  <!-- Load HR-OS5 Robot parameter file -->
+  <param name="robot_description" command="$(find xacro)/xacro.py $(find hros5_description)/urdf/hros5.xacro meshes_xacro_filename:=$(arg meshes_xacro)" />
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" >
+    <remap from="joint_states" to="hros5/joint_states" />
+  </node>
+
+  <include file="$(find hros5_bringup)/launch/robot_localization_ekf.launch" />
+
+  <include file="$(find openni2_launch)/launch/openni2.launch" >
+    <arg name="publish_tf" value="false" />
+  </include>
+
+  <node pkg="nodelet" type="nodelet" name="depthimage_to_laserscan" args="load depthimage_to_laserscan/DepthImageToLaserScanNodelet camera/camera_nodelet_manager" >
+    <param name="scan_height" value="10" />
+    <param name="output_frame_id" value="base_link" />
+    <remap from="image" to="/camera/depth_registered/image_raw" />
+    <remap from="camera/image" to="/camera/depth_registered/image_raw" />
+    <remap from="camera/scan" to="scan" />
+  </node>
+  <node pkg="gmapping" type="slam_gmapping" name="slam_gmapping" output="screen">
+    <param name="map_update_interval" value="5.0"/>
+    <param name="maxUrange" value="16.0"/>
+    <param name="sigma" value="0.05"/>
+    <param name="kernelSize" value="1"/>
+    <param name="lstep" value="0.05"/>
+    <param name="astep" value="0.05"/>
+    <param name="iterations" value="5"/>
+    <param name="lsigma" value="0.075"/>
+    <param name="ogain" value="3.0"/>
+    <param name="lskip" value="0"/>
+    <param name="srr" value="0.1"/>
+    <param name="srt" value="0.2"/>
+    <param name="str" value="0.1"/>
+    <param name="stt" value="0.2"/>
+    <param name="linearUpdate" value="1.0"/>
+    <param name="angularUpdate" value="0.5"/>
+    <param name="temporalUpdate" value="3.0"/>
+    <param name="resampleThreshold" value="0.5"/>
+    <param name="particles" value="30"/>
+    <param name="xmin" value="-50.0"/>
+    <param name="ymin" value="-50.0"/>
+    <param name="xmax" value="50.0"/>
+    <param name="ymax" value="50.0"/>
+    <param name="delta" value="0.05"/>
+    <param name="llsamplerange" value="0.01"/>
+    <param name="llsamplestep" value="0.01"/>
+    <param name="lasamplerange" value="0.005"/>
+    <param name="lasamplestep" value="0.005"/>
+  </node>
+  
+
+
+
+  <arg name="map_file" default="$(find hros5_navigation)/maps/map.yaml"/>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(arg map_file)" />
+
+<node pkg="um7" type="um7_driver" name="um7_driver" >
+    <param name="port" type="string" value="/dev/um7" />
+    <param name="frame_id" type="string" value="base_link" />
+  </node>
+
+
+
+  <include file="$(find hros5_teleop)/launch/hros5_teleop_controller.launch" />
+
+
+  <include file="$(find hros5_navigation)/launch/move_base.launch" />
+
+  <node pkg="rviz" type="rviz" name="rviz" args="-d $(find hros5_bringup)/rviz/HROS5.rviz"/>
+
+</launch>

@@ -1,36 +1,19 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(hros5_ros_control)
-
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
-
-# detect architecture
-#set(CMAKE_BUILD_TYPE Debug)
-#set(CMAKE_BUILD_TYPE Release)
-#set(CMAKE_BUILD_TYPE RelWithDebInfo)
+project(simple_rover)
 
 ## Find catkin macros and libraries
 ## if COMPONENTS list like find_package(catkin REQUIRED COMPONENTS xyz)
 ## is used, also find other catkin packages
 find_package(catkin REQUIRED COMPONENTS
+  geometry_msgs
   roscpp
   rospy
-  actionlib_msgs
-  actionlib
+  sensor_msgs
   std_msgs
-  hardware_interface
-  controller_manager
-  dynamic_reconfigure
-  tf
 )
 
 ## System dependencies are found with CMake's conventions
 # find_package(Boost REQUIRED COMPONENTS system)
-
-# Darwin-OP interface library
-
-SET(DARWIN_LIB_PATH ../../hros5_misc/hros5_framework/)
-find_package(darwin_lib REQUIRED)
-#MESSAGE(STATUS "${darwin_lib_INCLUDE_DIR}")
 
 
 ## Uncomment this if the package has a setup.py. This macro ensures
@@ -47,10 +30,10 @@ find_package(darwin_lib REQUIRED)
 ## * Let MSG_DEP_SET be the set of packages whose message types you use in
 ##   your messages/services/actions (e.g. std_msgs, actionlib_msgs, ...).
 ## * In the file package.xml:
+##   * add a build_depend tag for "message_generation"
 ##   * add a build_depend and a run_depend tag for each package in MSG_DEP_SET
-##   * If MSG_DEP_SET isn't empty the following dependencies might have been
-##     pulled in transitively but can be declared for certainty nonetheless:
-##     * add a build_depend tag for "message_generation"
+##   * If MSG_DEP_SET isn't empty the following dependency has been pulled in
+##     but can be declared for certainty nonetheless:
 ##     * add a run_depend tag for "message_runtime"
 ## * In this file (CMakeLists.txt):
 ##   * add "message_generation" and every package in MSG_DEP_SET to
@@ -86,11 +69,28 @@ find_package(darwin_lib REQUIRED)
 ## Generate added messages and services with any dependencies listed here
 # generate_messages(
 #   DEPENDENCIES
-#   std_msgs
+#   geometry_msgs#   sensor_msgs#   std_msgs
 # )
 
+################################################
+## Declare ROS dynamic reconfigure parameters ##
+################################################
 
-generate_dynamic_reconfigure_options( config/hros5_ros_control.cfg )
+## To declare and build dynamic reconfigure parameters within this
+## package, follow these steps:
+## * In the file package.xml:
+##   * add a build_depend and a run_depend tag for "dynamic_reconfigure"
+## * In this file (CMakeLists.txt):
+##   * add "dynamic_reconfigure" to
+##     find_package(catkin REQUIRED COMPONENTS ...)
+##   * uncomment the "generate_dynamic_reconfigure_options" section below
+##     and list every .cfg file to be processed
+
+## Generate dynamic reconfigure parameters in the 'cfg' folder
+# generate_dynamic_reconfigure_options(
+#   cfg/DynReconf1.cfg
+#   cfg/DynReconf2.cfg
+# )
 
 ###################################
 ## catkin specific configuration ##
@@ -102,10 +102,10 @@ generate_dynamic_reconfigure_options( config/hros5_ros_control.cfg )
 ## CATKIN_DEPENDS: catkin_packages dependent projects also need
 ## DEPENDS: system dependencies of this project that dependent projects also need
 catkin_package(
-  INCLUDE_DIRS include
-  LIBRARIES hros5_ros_control
-  CATKIN_DEPENDS roscpp rospy actionlib_msgs actionlib std_msgs hardware_interface controller_manager dynamic_reconfigure  tf
-  DEPENDS darwin_lib_LIBRARY
+#  INCLUDE_DIRS include
+#  LIBRARIES simple_rover
+#  CATKIN_DEPENDS geometry_msgs roscpp rospy sensor_msgs std_msgs
+#  DEPENDS system_lib
 )
 
 ###########
@@ -114,36 +114,32 @@ catkin_package(
 
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
-include_directories(include ${catkin_INCLUDE_DIRS})
-include_directories(include ${darwin_lib_INCLUDE_DIR})
-
-
-## Specify additional locations of header files
-set(HEADERS
-    include/${PROJECT_NAME}/hros5_hardware_interface.h
-    include/${PROJECT_NAME}/hros5_ros_controller.h
-
+# include_directories(include)
+include_directories(
+  ${catkin_INCLUDE_DIRS}
 )
 
-set(SOURCES
-    src/hros5_hardware_interface.cpp
-    src/hros5_ros_controller.cpp
-)
+## Declare a C++ library
+# add_library(simple_rover
+#   src/${PROJECT_NAME}/simple_rover.cpp
+# )
 
-## Declare a cpp library
-add_library(${PROJECT_NAME} ${SOURCES} ${HEADERS})
+## Add cmake target dependencies of the library
+## as an example, code may need to be generated before libraries
+## either from message generation or dynamic reconfigure
+# add_dependencies(simple_rover ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
-## Declare a cpp executable
-add_executable(hros5_ros_controller src/hros5_ros_controller.cpp)
+## Declare a C++ executable
+add_executable(simple_rover_node src/simple_rover_node.cpp)
 
-## Add cmake target dependencies of the executable/library
-## as an example, message headers may need to be generated before nodes
-add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
-add_dependencies(${PROJECT_NAME} ${PROJECT_NAME}_gencfg)
+## Add cmake target dependencies of the executable
+## same as for the library above
+# add_dependencies(simple_rover_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${darwin_lib_LIBRARY} )
-target_link_libraries(hros5_ros_controller ${PROJECT_NAME})
+target_link_libraries(simple_rover_node
+   ${catkin_LIBRARIES}
+)
 
 #############
 ## Install ##
@@ -160,7 +156,7 @@ target_link_libraries(hros5_ros_controller ${PROJECT_NAME})
 # )
 
 ## Mark executables and/or libraries for installation
-# install(TARGETS thor_mang_ros_control thor_mang_ros_control_node
+# install(TARGETS simple_rover simple_rover_node
 #   ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
 #   RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
@@ -185,7 +181,7 @@ target_link_libraries(hros5_ros_controller ${PROJECT_NAME})
 #############
 
 ## Add gtest based cpp test target and link libraries
-# catkin_add_gtest(${PROJECT_NAME}-test test/test_thor_mang_ros_control.cpp)
+# catkin_add_gtest(${PROJECT_NAME}-test test/test_simple_rover.cpp)
 # if(TARGET ${PROJECT_NAME}-test)
 #   target_link_libraries(${PROJECT_NAME}-test ${PROJECT_NAME})
 # endif()

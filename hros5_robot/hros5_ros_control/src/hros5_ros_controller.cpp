@@ -13,10 +13,11 @@ RobotisOPRosControllerNode::RobotisOPRosControllerNode()
 
     // Subscribe topics
     torque_on_sub_ = nh.subscribe("torque_on", 1, &RobotisOPRosControllerNode::setTorqueOn, this);
-    cmd_vel_sub_ = nh.subscribe("cmd_vel", 100, &RobotisOPRosControllerNode::cmdVelCb, this);
-    start_action_sub_ = nh.subscribe("start_action", 100, &RobotisOPRosControllerNode::startActionCb, this);
-    enable_walk_sub_ = nh.subscribe("enable_walking", 100, &RobotisOPRosControllerNode::enableWalkCb, this);
-    stand_sit_sub_ = nh.subscribe("standing_sitting", 100, &RobotisOPRosControllerNode::standSitCb, this);
+    cmd_vel_sub_ = nh.subscribe("cmd_vel", 25, &RobotisOPRosControllerNode::cmdVelCb, this);
+    navigation_cmd_vel_sub_ = nh.subscribe("nav_cmd_vel", 25, &RobotisOPRosControllerNode::cmdNavVelCb, this);
+    start_action_sub_ = nh.subscribe("start_action", 1, &RobotisOPRosControllerNode::startActionCb, this);
+    enable_walk_sub_ = nh.subscribe("enable_walking", 2, &RobotisOPRosControllerNode::enableWalkCb, this);
+    stand_sit_sub_ = nh.subscribe("standing_sitting", 2, &RobotisOPRosControllerNode::standSitCb, this);
 
     //Publish topics
     odom_pub_ = nh.advertise<nav_msgs::Odometry>( "odom", 50 );
@@ -24,8 +25,11 @@ RobotisOPRosControllerNode::RobotisOPRosControllerNode()
     current_time = ros::Time::now();
     last_time = ros::Time::now();
 
+    //TODO: set height when action is == darwin sit or stand (9,15)?
     position_.z = 0.24; //Torso height 240mm in sitting position
+    position_.z = 0.24 + 0.14; //TODO: Calculate height.. //This is about standing position
 
+ignore_teleop_ = false;
     ROS_INFO("Initialization of ros controller completed!");
 }
 
@@ -41,13 +45,67 @@ void RobotisOPRosControllerNode::setTorqueOn(std_msgs::BoolConstPtr enable)
 
 void RobotisOPRosControllerNode::cmdVelCb(const geometry_msgs::Twist::ConstPtr& msg)
 {
+    if ( ignore_teleop_ == true )
+    {
+        ROS_WARN_ONCE( "Joystick teleop velocities are ignored during navigation. This is your last warning.");
+        return; //TODO: Ignoring Teleop velocities!!!!!!!
+    }
+
     RobotHardwareInterface::Instance()->cmdWalking(msg);
 
     double period_time = RobotHardwareInterface::Instance()->getPeriodTime();
 
-    gait_vel_.linear.x = (msg->linear.x/1000.0)/(period_time/1000.0)*2.0;
-    gait_vel_.linear.y = (msg->linear.y/1000.0)/(period_time/1000.0)*2.0;
-    gait_vel_.angular.z = (msg->angular.z/57.2958)/(period_time/1000.0)*0.66;
+    gait_vel_.linear.x = (msg->linear.x/1000.0)/(period_time/1000.0)*4.0;
+    //gait_vel_.linear.y = (msg->linear.y/1000.0)/(period_time/1000.0)*4.0;
+    gait_vel_.angular.z = (msg->angular.z/57.2958)/(period_time/1000.0)*0.8;
+
+    //TODO: This is a poor way of shifting the robot left and right as the darwin gait turns
+    //if ( msg->angular.z > 0.0 ) //turning clockwise.. slight right side step
+    gait_vel_.linear.y = (msg->angular.z/1000.0)/(period_time/1000.0);
+    if ( msg->angular.z > 0.0 )
+        gait_vel_.linear.x += (msg->angular.z/1000.0)/(period_time/1000.0);
+    else if ( msg->angular.z < 0.0 )
+        gait_vel_.linear.x -= (msg->angular.z/1000.0)/(period_time/1000.0);
+}
+
+void RobotisOPRosControllerNode::cmdNavVelCb(const geometry_msgs::Twist::ConstPtr& msg)
+{
+    //TODO: FIX UNITS (ROS Compliant)
+    //TODO: Not ready to move robot yet..
+    //TODO: Warning.. we better be STANDING UP!!!
+    if ( !RobotHardwareInterface::Instance()->checkIsWalking() )
+    {
+        ignore_teleop_ = true;
+        ROS_WARN( "Nav starting walk gait" );
+        RobotHardwareInterface::Instance()->enableWalking();
+    }
+
+    RobotHardwareInterface::Instance()->cmdWalkingROSUnits(msg);
+
+    double period_time = RobotHardwareInterface::Instance()->getPeriodTime();
+
+    gait_vel_.linear.x = msg->linear.x/(period_time/1000.0)*4.0;
+    gait_vel_.linear.y = msg->linear.y/(period_time/1000.0)*4.0;
+    gait_vel_.angular.z = msg->angular.z/(period_time/1000.0);
+    ROS_INFO_STREAM( "Nav Cmd Vel.. X: " << msg->linear.x << " Z: " << msg->angular.z << " Y: " << msg->linear.y );
+
+    //TODO: This is a poor way of shifting the robot left and right as the darwin gait turns
+    //if ( msg->angular.z > 0.0 ) //turning clockwise.. slight right side step
+    gait_vel_.linear.y = ((msg->angular.z*57.2958)/1000.0)/(period_time/1000.0);
+    if ( msg->angular.z > 0.0 )
+        gait_vel_.linear.x += ((msg->angular.z*57.2958)/1000.0)/(period_time/1000.0);
+    else if ( msg->angular.z < 0.0 )
+        gait_vel_.linear.x -= ((msg->angular.z*57.2958)/1000.0)/(period_time/1000.0);
+
+    if ( msg->linear.x == 0.0 && msg->linear.y == 0.0 && msg->angular.z == 0.0 )
+    {
+        ignore_teleop_ = false;
+        if ( RobotHardwareInterface::Instance()->checkIsWalking() )
+        {
+            ROS_WARN( "Nav stopping walk gait" );
+            RobotHardwareInterface::Instance()->disableWalking();
+        }
+    }
 }
 
 void RobotisOPRosControllerNode::startActionCb(std_msgs::Int32 action)
@@ -69,7 +127,7 @@ void RobotisOPRosControllerNode::standSitCb( std_msgs::BoolConstPtr p_standing )
         action.data = 9;
         RobotHardwareInterface::Instance()->startAction(action); //Walk Ready
 
-        position_.z = 0.24 + 0.12; //TODO: Calculate height..
+        position_.z = 0.24 + 0.14; //TODO: Calculate height..
     }
     else
     {
@@ -82,6 +140,7 @@ void RobotisOPRosControllerNode::standSitCb( std_msgs::BoolConstPtr p_standing )
 
 void RobotisOPRosControllerNode::dynamicReconfigureCb(hros5_ros_control::hros5_ros_controlConfig &config, uint32_t level)
 {
+    RobotHardwareInterface::Instance()->storeROSControlConfig( config );
     RobotHardwareInterface::Instance()->setPIDGains(1,config.RShoulderPitch_position_controller_p_gain, config.RShoulderPitch_position_controller_i_gain, config.RShoulderPitch_position_controller_d_gain);
     RobotHardwareInterface::Instance()->setPIDGains(2,config.LShoulderPitch_position_controller_p_gain, config.LShoulderPitch_position_controller_i_gain, config.LShoulderPitch_position_controller_d_gain);
     RobotHardwareInterface::Instance()->setPIDGains(3,config.RShoulderRoll_position_controller_p_gain, config.RShoulderRoll_position_controller_i_gain, config.RShoulderRoll_position_controller_d_gain);
@@ -107,18 +166,18 @@ void RobotisOPRosControllerNode::dynamicReconfigureCb(hros5_ros_control::hros5_r
 
 void RobotisOPRosControllerNode::update(ros::Time time, ros::Duration period)
 {
-    // ros control update  cycle
+    // ros control update cycle
     RobotHardwareInterface::Instance()->read(time, period);
     controller_manager_->update(time, period);
     RobotHardwareInterface::Instance()->write(time, period);
 
-
-if ( !RobotHardwareInterface::Instance()->checkIsWalking() ) //TODO: If we are not walking be sure to ignore controller/twist input for odom
-{
-    gait_vel_.linear.x = 0.0;
-    gait_vel_.linear.y = 0.0;
-    gait_vel_.angular.z = 0.0;
-}
+    //NOTE: If we are not walking be sure to ignore controller/twist input for odom
+    if ( !RobotHardwareInterface::Instance()->checkIsWalking() ) 
+    { 
+        gait_vel_.linear.x = 0.0;
+        gait_vel_.linear.y = 0.0;
+        gait_vel_.angular.z = 0.0;
+    }
 
     publishOdometry( gait_vel_ );
 
