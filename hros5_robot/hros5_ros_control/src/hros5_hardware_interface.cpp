@@ -671,4 +671,12 @@ void RobotHardwareInterface::setBlockWrite(bool block)
         ROS_INFO("Unblocked Write");
     }
 }
+
+void RobotHardwareInterface::loadWalkGaitINI(const std_msgs::StringConstPtr & file_path)
+{
+    ROS_WARN_STREAM( "Walk Gait Configuration changed to: " << file_path->data );
+    minIni ini =  minIni(file_path->data);
+    Walking::GetInstance()->LoadINISettings( &ini );
+}
+
 }

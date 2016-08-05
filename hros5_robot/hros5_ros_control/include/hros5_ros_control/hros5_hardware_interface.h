@@ -14,6 +14,7 @@
 // ROS Messages
 #include <std_msgs/Bool.h>
 #include <std_msgs/Int32.h>
+#include <std_msgs/String.h>
 
 // ROS Control
 #include <hardware_interface/joint_command_interface.h>
@@ -58,6 +59,7 @@ public:
     void checkFall();
     bool checkIsWalking(void);
     double getPeriodTime(void);
+    void loadWalkGaitINI(const std_msgs::StringConstPtr & file_path);
 
     // Typedefs
     typedef boost::shared_ptr<RobotHardwareInterface> Ptr;

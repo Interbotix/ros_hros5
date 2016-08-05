@@ -18,6 +18,7 @@ RobotisOPRosControllerNode::RobotisOPRosControllerNode()
     start_action_sub_ = nh.subscribe("start_action", 1, &RobotisOPRosControllerNode::startActionCb, this);
     enable_walk_sub_ = nh.subscribe("enable_walking", 2, &RobotisOPRosControllerNode::enableWalkCb, this);
     stand_sit_sub_ = nh.subscribe("standing_sitting", 2, &RobotisOPRosControllerNode::standSitCb, this);
+    load_gait_ini_sub_ = nh.subscribe("walk_gait_load_ini", 2, &RobotisOPRosControllerNode::loadGaitIniCb, this);
 
     //Publish topics
     odom_pub_ = nh.advertise<nav_msgs::Odometry>( "odom", 50 );
@@ -136,6 +137,11 @@ void RobotisOPRosControllerNode::standSitCb( std_msgs::BoolConstPtr p_standing )
 
         position_.z = 0.24;
     }
+}
+
+void RobotisOPRosControllerNode::loadGaitIniCb( std_msgs::StringConstPtr file_path )
+{
+    RobotHardwareInterface::Instance()->loadWalkGaitINI(file_path);
 }
 
 void RobotisOPRosControllerNode::dynamicReconfigureCb(hros5_ros_control::hros5_ros_controlConfig &config, uint32_t level)
