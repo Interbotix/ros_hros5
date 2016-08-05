@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+
+<launch>
+
+  <arg name="namespace" default="/hros5"/>
+  <group ns="$(arg namespace)">
+    <!--<include file="$(find hros5_camera)/launch/hros5_camera.launch"/>-->
+    <include file="$(find hros5_ros_control)/launch/hros5_ros_controller.launch"/>
+  </group>
+
+  <!-- xacro for visuals/collisions -->
+  <arg name="meshes_xacro" default="$(find hros5_description)/urdf/hros5_visuals_collisions_armored.xacro"/>
+  <!-- Load HR-OS5 Robot parameter file -->
+  <param name="robot_description" command="$(find xacro)/xacro.py $(find hros5_description)/urdf/hros5.xacro meshes_xacro_filename:=$(arg meshes_xacro)" />
+
+  <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher" >
+    <remap from="joint_states" to="hros5/joint_states" />
+  </node>
+
+  <include file="$(find hros5_bringup)/launch/robot_localization_ekf.launch" />
+
+  <include file="$(find hros5_teleop)/launch/hros5_teleop_controller.launch" />
+
+  <include file="$(find usb_cam)/launch/usb_cam-test.launch" />
+
+  <node pkg="contour_detector" type="contour_detector_node" name="contour_detector" output="screen">
+  </node>
+
+  <node pkg="weight_lifter" type="weight_lifter_node" name="weight_lifter" output="screen">
+    <param name="weighted_gait_config" value="$(find hros5_framework)/Data/config_weightlift.ini" />
+  </node>
+</launch>
