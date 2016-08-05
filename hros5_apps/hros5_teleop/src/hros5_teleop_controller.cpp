@@ -37,7 +37,7 @@ private:
     ros::Publisher vel_pub_;
     ros::Subscriber joy_sub_;
 
-    std_msgs::Bool enable_walking_msg;
+    std_msgs::Int32 enable_walking_msg;
     std_msgs::Bool sit_stand_msg;
 
     ros::Publisher tilt_pub_;
@@ -83,7 +83,7 @@ HROS5TeleopController::HROS5TeleopController():
     tilt_pub_ = nh_.advertise<std_msgs::Float64>("/hros5/HeadPitch_position_controller/command", 2);
     panh_pub_ = nh_.advertise<std_msgs::Float64>("/hros5/HeadYaw_position_controller/command", 2);
     actionh_pub_ = nh_.advertise<std_msgs::Int32>("/hros5/start_action", 2);
-    enable_walking_pub_ = nh_.advertise<std_msgs::Bool>("/hros5/enable_walking", 2);
+    enable_walking_pub_ = nh_.advertise<std_msgs::Int32>("/hros5/enable_walking", 2);
     sit_stand_pub_ = nh_.advertise<std_msgs::Bool>("/hros5/standing_sitting", 2);
 
     vel_pub_ = nh_.advertise<geometry_msgs::Twist>("hros5/cmd_vel", 1);

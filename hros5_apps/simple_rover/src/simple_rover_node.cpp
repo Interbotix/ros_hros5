@@ -40,7 +40,7 @@ private:
     ros::Publisher enable_walking_pub_;
     ros::Publisher sit_stand_pub_;
 
-    std_msgs::Bool enable_walking_msg;
+    std_msgs::Int32 enable_walking_msg;
     std_msgs::Bool sit_stand_msg;
 
 public:
@@ -74,7 +74,7 @@ HROS5TeleopController::HROS5TeleopController()
     command_vel_.linear.y = 0.0;
 
     vel_pub_ = nh_.advertise<geometry_msgs::Twist>("hros5/cmd_vel", 1);
-    enable_walking_pub_ = nh_.advertise<std_msgs::Bool>("/hros5/enable_walking", 1);
+    enable_walking_pub_ = nh_.advertise<std_msgs::Int32>("/hros5/enable_walking", 1);
     sit_stand_pub_ = nh_.advertise<std_msgs::Bool>("/hros5/standing_sitting", 1);
 
     system( "espeak \"Starting simple_rover_node\"" );

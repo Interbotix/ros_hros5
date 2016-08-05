@@ -49,7 +49,7 @@ public:
     void setJointStateRate(double joint_state_rate);
     void setTorqueOn(int id, bool enable);
     void setTorqueOn(bool enable);
-    void enableWalking(std_msgs::BoolConstPtr enable);
+    void enableWalking(std_msgs::Int32ConstPtr enable);
     void enableWalking();
     void disableWalking();
     void cmdWalking(const geometry_msgs::Twist::ConstPtr& msg);

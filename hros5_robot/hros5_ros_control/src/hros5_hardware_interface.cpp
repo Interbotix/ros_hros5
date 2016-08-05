@@ -381,13 +381,19 @@ void RobotHardwareInterface::cmdWalkingROSUnits(const geometry_msgs::Twist::Cons
    // ROS_INFO( "A: %0.1fdegrees/period Commanded", msg->angular.z*57.2958 );
 }
 
-void RobotHardwareInterface::enableWalking(std_msgs::BoolConstPtr enable)
+void RobotHardwareInterface::enableWalking(std_msgs::Int32ConstPtr enable)
 {
-    if(!Walking::GetInstance()->IsRunning() && enable->data)
+    if( !Walking::GetInstance()->IsRunning() && enable->data > 0 )
     {
         setBlockWrite(true);
-        //Walking::GetInstance()->m_Joint.SetEnableLowerBody(true, true);
-        Walking::GetInstance()->m_Joint.SetEnableBodyWithoutHead(true, true);
+        if ( enable->data == 2 ) //Enable walk gait with lower body only
+        {
+            Walking::GetInstance()->m_Joint.SetEnableLowerBody(true, true);
+        }
+        else
+        {
+            Walking::GetInstance()->m_Joint.SetEnableBodyWithoutHead(true, true);
+        }
         Walking::GetInstance()->Start();
 
         msg_is_walking_.data = true;
@@ -398,20 +404,22 @@ void RobotHardwareInterface::enableWalking(std_msgs::BoolConstPtr enable)
         Walking::GetInstance()->Stop();
         while(Walking::GetInstance()->IsRunning())
         {
-            //usleep(8*1000);
             ros::Duration(0.008).sleep();
         }
 
         setBlockWrite(false);
-        
-        //Walking::GetInstance()->m_Joint.SetEnableLowerBody(false, true);
-        Walking::GetInstance()->m_Joint.SetEnableBodyWithoutHead(false, true);
+        if ( enable->data == 2 )
+        {
+            Walking::GetInstance()->m_Joint.SetEnableLowerBody(false, true);
+        }
+        else
+        {
+            Walking::GetInstance()->m_Joint.SetEnableBodyWithoutHead(false, true);    
+        }
 
-//ROS_ERROR( "hardware interface stopped walking and is attempting to restore ros control config" );
         restoreROSControlConfig();
     }
 }
-
 
 //TODO: NOTE: enable,disable Walking added for navigation stack
 void RobotHardwareInterface::enableWalking()

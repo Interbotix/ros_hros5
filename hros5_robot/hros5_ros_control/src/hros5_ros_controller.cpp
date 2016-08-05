@@ -113,7 +113,7 @@ void RobotisOPRosControllerNode::startActionCb(std_msgs::Int32 action)
     RobotHardwareInterface::Instance()->startAction(action);
 }
 
-void RobotisOPRosControllerNode::enableWalkCb(std_msgs::BoolConstPtr enable)
+void RobotisOPRosControllerNode::enableWalkCb(std_msgs::Int32ConstPtr enable)
 {
     RobotHardwareInterface::Instance()->enableWalking(enable);
 }

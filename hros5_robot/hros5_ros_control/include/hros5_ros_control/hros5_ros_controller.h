@@ -49,7 +49,7 @@ geometry_msgs::Quaternion imu_orientation_;
 
     // Callbacks
     void standSitCb( std_msgs::BoolConstPtr p_standing );
-    void enableWalkCb(std_msgs::BoolConstPtr enable);
+    void enableWalkCb(std_msgs::Int32ConstPtr enable);
     void cmdVelCb(const geometry_msgs::Twist::ConstPtr& msg);
     void cmdNavVelCb(const geometry_msgs::Twist::ConstPtr& msg);
     void startActionCb(std_msgs::Int32 action);

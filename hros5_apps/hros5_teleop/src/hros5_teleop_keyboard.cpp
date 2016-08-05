@@ -78,7 +78,7 @@ private:
     geometry_msgs::Twist cmdvel;
     std_msgs::Float64 angle_msg;
     std_msgs::Int32 action_index_msg;
-    std_msgs::Bool enable_walking_msg;
+    std_msgs::Int32 enable_walking_msg;
     std_msgs::Bool sit_stand_msg;
 
     ros::NodeHandle n_;
@@ -108,7 +108,7 @@ public:
         tilt_pub_ = n_.advertise<std_msgs::Float64>("/hros5/HeadPitch_position_controller/command", 100);
         pan_pub_ = n_.advertise<std_msgs::Float64>("/hros5/HeadYaw_position_controller/command", 100);
         action_pub_ = n_.advertise<std_msgs::Int32>("/hros5/start_action", 100);
-        enable_walking_pub_ = n_.advertise<std_msgs::Bool>("/hros5/enable_walking", 100);
+        enable_walking_pub_ = n_.advertise<std_msgs::Int32>("/hros5/enable_walking", 100);
         sit_stand_pub_ = n_.advertise<std_msgs::Bool>("/hros5/standing_sitting", 100);
     }
     ~TBK_Node() { }
