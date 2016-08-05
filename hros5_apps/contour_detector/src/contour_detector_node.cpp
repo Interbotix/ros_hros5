@@ -237,11 +237,12 @@ public:
       boost::bind(&ContourDetector::reconfigureCallback, this, _1, _2);
     srv.setCallback(f);
 
-    
+low_threshold_ = 42; // only for canny
     img_pub_ = it_->advertise("/contour_detector/image", 1);
     msg_pub_ = nh_.advertise<opencv_apps::ContourArrayStamped>("/contour_detector/contours", 1);
 
     subscribe();
+low_threshold_ = 42; // only for canny
    //onInitPostProcess();
   }
 };

@@ -40,7 +40,7 @@ private:
     ros::Publisher enable_walking_pub_;
     ros::Publisher sit_stand_pub_;
 
-    std_msgs::Bool enable_walking_msg;
+    std_msgs::Int32 enable_walking_msg;
     std_msgs::Bool sit_stand_msg;
 
 public:
@@ -76,7 +76,7 @@ HROS5ContourFollower::HROS5ContourFollower()
     command_vel_.linear.y = 0.0;
 
     vel_pub_ = nh_.advertise<geometry_msgs::Twist>("hros5/cmd_vel", 1);
-    enable_walking_pub_ = nh_.advertise<std_msgs::Bool>("/hros5/enable_walking", 1);
+    enable_walking_pub_ = nh_.advertise<std_msgs::Int32>("/hros5/enable_walking", 1);
     sit_stand_pub_ = nh_.advertise<std_msgs::Bool>("/hros5/standing_sitting", 1);
 
     system( "espeak \"Starting contour_follower_node\"" );
@@ -327,12 +327,13 @@ void HROS5ContourFollower::contourCallback(const opencv_apps::ContourArrayStampe
         curve_detected = true;
 
         double turn_angle_limit = 20.0;
-        double turn_angle_ratio = -0.07;
+        double turn_angle_ratio = -0.06; //-0.07
+        double turn_angle_ratio_fast = -0.09;
 
         if ( has_top_estimate == true )
-            contour_turn_angle = (0.9 * contour_turn_angle ) + ( 0.1 * (average_top_horizonal_pos * turn_angle_ratio));
+            contour_turn_angle = (0.8 * contour_turn_angle ) + ( 0.2 * (average_top_horizonal_pos * turn_angle_ratio));
         else if ( has_bottom_estimate == true ) //if we have no top detection but have bottom we might want to turn faster
-            contour_turn_angle = (0.9 * contour_turn_angle ) + ( 0.1 * (average_bottom_horizonal_pos * turn_angle_ratio));
+            contour_turn_angle = (0.7 * contour_turn_angle ) + ( 0.3 * (average_bottom_horizonal_pos * turn_angle_ratio_fast));
 
         if ( contour_turn_angle > turn_angle_limit ) contour_turn_angle = turn_angle_limit;
         if ( contour_turn_angle < -turn_angle_limit ) contour_turn_angle = -turn_angle_limit;
@@ -410,7 +411,7 @@ int main(int argc, char** argv)
                     contour_follower_node.command_vel_.linear.y = 0.0;
                 break;
                 case STATE_FORWARD:
-                    if ( contour_follower_node.command_vel_.linear.x < 25.0 ) contour_follower_node.command_vel_.linear.x += 0.5;
+                    if ( contour_follower_node.command_vel_.linear.x < 20.0 ) contour_follower_node.command_vel_.linear.x += 0.25;
                     contour_follower_node.command_vel_.angular.z = 0.0;
                     contour_follower_node.command_vel_.linear.y = 0.0;
                     
